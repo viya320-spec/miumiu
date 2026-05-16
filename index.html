@@ -687,6 +687,7 @@ function renderList() {
     return true;
   });
   document.getElementById('headerCount').textContent = '共 ' + clients.length + ' 位客戶';
+  renderBdayBanner();
   var el = document.getElementById('clientList');
   if (!list.length) {
     el.innerHTML = '<div class="empty"><i class="ti ti-heart-off"></i><div class="empty-t">尚無客戶資料</div><div class="empty-s">點右上角「新增」加入第一位客戶</div></div>';
