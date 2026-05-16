@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>重複客戶檢查</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,sans-serif;background:#f8f5ee;padding:16px;font-size:15px;}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(130,80,60,.08);}
+h1{font-size:19px;font-weight:700;color:#3a3530;margin-bottom:6px;}
+.sub{font-size:13px;color:#7a6e65;margin-bottom:16px;}
+.btn{display:block;width:100%;padding:15px;font-size:17px;font-weight:700;border:none;border-radius:14px;background:linear-gradient(135deg,#b8927a,#8a7d9e);color:#fff;cursor:pointer;}
+.btn:disabled{opacity:.5;}
+.status{margin-top:12px;font-size:14px;color:#7a6e65;text-align:center;}
+.dup-item{background:#fff5f0;border:1.5px solid #e8c0a8;border-radius:12px;padding:14px;margin-top:10px;}
+.dup-name{font-size:17px;font-weight:700;color:#b8927a;margin-bottom:6px;}
+.dup-row{font-size:13px;color:#7a6e65;padding:4px 0;border-bottom:1px solid #f0e8e0;}
+.dup-row:last-child{border-bottom:none;}
+.ok-msg{background:#f0faf6;border:1.5px solid #a8d8b8;border-radius:12px;padding:16px;text-align:center;color:#3a8a5a;font-weight:600;font-size:16px;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🔍 重複客戶檢查</h1>
+  <div class="sub">登入後自動檢查您的試算表是否有重複姓名</div>
+  <button class="btn" id="btn" onclick="startCheck()">登入並開始檢查</button>
+  <div class="status" id="status"></div>
+  <div id="result"></div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script>
+var CLIENT_ID = '543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
+var SHEET_TITLE = 'Miu\u5BA2\u6236\u95DC\u61F7';
+var gToken = null;
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+function startCheck() {
+  document.getElementById('btn').disabled = true;
+  setStatus('登入中…');
+  function waitGSI() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+      google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/drive.readonly email',
+        callback: function(resp) {
+          if (resp.error) { setStatus('登入失敗'); document.getElementById('btn').disabled = false; return; }
+          gToken = resp.access_token;
+          setStatus('搜尋試算表…');
+          findSheet();
+        }
+      }).requestAccessToken();
+    } else { setTimeout(waitGSI, 200); }
+  }
+  waitGSI();
+}
+
+function findSheet() {
+  var q = encodeURIComponent("name='\u5ba2\u6236\u95dc\u61f7\u7cfb\u7d71' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false");
+  fetch('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)', {
+    headers: { Authorization: 'Bearer ' + gToken }
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    if (!res.files || !res.files.length) {
+      setStatus('找不到試算表，請先登入客戶關懷系統');
+      document.getElementById('btn').disabled = false;
+      return;
+    }
+    checkDuplicates(res.files[0].id);
+  });
+}
+
+function checkDuplicates(sheetId) {
+  setStatus('讀取客戶資料…');
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sheetId + '/values/' + encodeURIComponent(SHEET_TITLE + '!A2:B'), {
+    headers: { Authorization: 'Bearer ' + gToken }
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    var rows = res.values || [];
+    var nameMap = {};
+    for (var i = 0; i < rows.length; i++) {
+      var id = rows[i][0] || '';
+      var name = rows[i][1] || '';
+      if (!name) continue;
+      if (!nameMap[name]) nameMap[name] = [];
+      nameMap[name].push({ id: id, row: i + 2 });
+    }
+
+    var dups = [];
+    for (var n in nameMap) {
+      if (nameMap[n].length > 1) dups.push({ name: n, entries: nameMap[n] });
+    }
+
+    var result = document.getElementById('result');
+    setStatus('');
+
+    if (dups.length === 0) {
+      result.innerHTML = '<div class="ok-msg">✓ 沒有重複客戶！共 ' + rows.length + ' 筆資料，全部正常。</div>';
+    } else {
+      var html = '<div style="margin-top:12px;font-size:14px;font-weight:600;color:#b8927a;">發現 ' + dups.length + ' 組重複姓名：</div>';
+      for (var i = 0; i < dups.length; i++) {
+        var d = dups[i];
+        html += '<div class="dup-item"><div class="dup-name">⚠️ ' + d.name + '（共 ' + d.entries.length + ' 筆）</div>';
+        for (var j = 0; j < d.entries.length; j++) {
+          html += '<div class="dup-row">第 ' + d.entries[j].row + ' 行　ID：' + d.entries[j].id.slice(0, 16) + '…</div>';
+        }
+        html += '</div>';
+      }
+      result.innerHTML = html;
+    }
+    document.getElementById('btn').disabled = false;
+    document.getElementById('btn').textContent = '重新檢查';
+  });
+}
+</script>
+</body>
+</html>
