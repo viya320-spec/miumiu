@@ -768,6 +768,11 @@ document.getElementById('newModal').addEventListener('click', function(e) { if (
 function createClient() {
   var name = document.getElementById('newName').value.trim();
   if (!name) { alert('請輸入姓名'); return; }
+  var dup = clients.filter(function(c) { return c.name === name; });
+  if (dup.length > 0) {
+    var go = confirm('⚠️ 已有客戶叫「' + name + '」\n\n確定要新增第二筆嗎？\n（如不是重複請按確定）');
+    if (!go) return;
+  }
   var c = { id: Date.now().toString(), name: name, birthday: document.getElementById('newBday').value, tags: [], records: [], createdAt: new Date().toISOString(), code: '' };
   clients.unshift(c); closeModal('newModal'); renderList(); renderBdayBanner(); openDetail(c.id); scheduleSync();
 }
