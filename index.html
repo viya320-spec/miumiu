@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Miu客戶關懷</title>
+<title>客戶關懷系統</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -178,14 +178,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 <!-- Loading -->
 <div id="loadingScreen">
   <div class="load-blob">🌿</div>
-  <div class="load-title">Miu 客戶關懷</div>
+  <div class="load-title">客戶關懷系統</div>
   <div class="load-sub">載入中…</div>
 </div>
 
 <!-- Login -->
 <div id="loginScreen">
   <div class="login-blob">🌿</div>
-  <div class="login-title">Miu 客戶關懷</div>
+  <div class="login-title">客戶關懷系統</div>
   <div class="login-sub">登入 Google 帳號<br>資料自動同步至您的 Google Sheets</div>
   <button class="btn-google" onclick="signIn()">
     <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
@@ -198,7 +198,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
   <div class="header">
     <div class="header-row">
       <div>
-        <div class="header-title">🌿 Miu 客戶關懷</div>
+        <div class="header-title">🌿 客戶關懷系統</div>
         <div class="header-count" id="headerCount">共 0 位客戶</div>
       </div>
       <button class="btn-new" onclick="openNewModal()"><i class="ti ti-user-plus"></i> 新增</button>
@@ -496,7 +496,7 @@ async function initSheet(email, userKey) {
   }
   // Search for existing sheet in Drive
   try {
-    var search = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'Miu客戶關懷系統'%20and%20mimeType%3D'application%2Fvnd.google-apps.spreadsheet'%20and%20trashed%3Dfalse&fields=files(id,name)", {
+    var search = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'客戶關懷系統'%20and%20mimeType%3D'application%2Fvnd.google-apps.spreadsheet'%20and%20trashed%3Dfalse&fields=files(id,name)", {
       headers: { Authorization: 'Bearer ' + accessToken }
     }).then(function(r) { return r.json(); });
     if (search.files && search.files.length > 0) {
@@ -512,7 +512,7 @@ async function initSheet(email, userKey) {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        properties: { title: 'Miu客戶關懷系統' },
+        properties: { title: '客戶關懷系統' },
         sheets: [
           { properties: { title: SHEET_TITLE } },
           { properties: { title: TAG_SHEET } }
