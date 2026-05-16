@@ -286,7 +286,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async onload="tryAutoLogin()"></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
 <script>
 var CLIENT_ID = '543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
 var SHEET_ID = '184tkzxwG2jTnf3amFlEtpdjul_LFWreMLIIfBDK1U0E';
@@ -766,6 +766,16 @@ function confirmAddTag() {
   if (c) renderDetail(c);
   scheduleSync(); showToast('標籤已新增', 'ok');
 }
+
+// Wait for GSI to load then auto login
+function waitForGSI() {
+  if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+    tryAutoLogin();
+  } else {
+    setTimeout(waitForGSI, 200);
+  }
+}
+waitForGSI();
 </script>
 </body>
 </html>
