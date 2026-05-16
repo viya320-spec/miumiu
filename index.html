@@ -239,6 +239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
   </div>
 
   <div class="chips" id="chipsRow"></div>
+  <div class="chips" id="monthRow" style="padding-top:0;"></div>
   <div class="list" id="clientList"></div>
 </div>
 
@@ -317,6 +318,7 @@ var syncTimer = null;
 var isSyncing = false;
 var newTagColor = TAG_COLORS[0];
 var bdayOpen = false;
+var currentMonth = 0; // 0 = all months
 
 // ── Utils ──────────────────────────────────────────────────────
 function showToast(msg, type, dur) {
@@ -409,6 +411,7 @@ async function onSignedIn(token, email) {
   await loadTags();
   await loadClients();
   renderChips();
+  renderMonthChips();
   renderList();
   renderBdayBanner();
 }
@@ -646,12 +649,41 @@ function renderChips() {
 
 function setFilter(f) { currentFilter = f; renderChips(); renderList(); }
 
+function renderMonthChips() {
+  var row = document.getElementById('monthRow');
+  var months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  var html = '<button class="chip' + (currentMonth === 0 ? ' active" style="background:linear-gradient(135deg,#7a9e9e,#8a9aaa)' : '"') + '" onclick="setMonth(0)" style="' + (currentMonth === 0 ? 'background:linear-gradient(135deg,#7a9e9e,#8a9aaa);color:#fff;' : '') + '">🎂 生日月</button>';
+  months.forEach(function(m, i) {
+    var mn = i + 1;
+    var active = currentMonth === mn;
+    // Count clients with this birth month
+    var count = clients.filter(function(c) {
+      if (!c.birthday) return false;
+      return parseInt(c.birthday.split('-')[1]) === mn;
+    }).length;
+    if (count > 0) {
+      html += '<button class="chip' + (active ? ' active" style="background:linear-gradient(135deg,#7a9e9e,#8a9aaa);color:#fff' : '"') + '" onclick="setMonth(' + mn + ')">' + m + ' <span style="font-size:11px;opacity:.7;">(' + count + ')</span></button>';
+    }
+  });
+  row.innerHTML = html;
+}
+
+function setMonth(m) {
+  currentMonth = m;
+  renderMonthChips();
+  renderList();
+}
+
 // ── List ───────────────────────────────────────────────────────
 function renderList() {
   var q = document.getElementById('searchInput').value.trim();
   var list = clients.filter(function(c) {
     if (q && c.name.indexOf(q) < 0) return false;
     if (currentFilter && c.tags.indexOf(currentFilter) < 0) return false;
+    if (currentMonth > 0) {
+      if (!c.birthday) return false;
+      if (parseInt(c.birthday.split('-')[1]) !== currentMonth) return false;
+    }
     return true;
   });
   document.getElementById('headerCount').textContent = '共 ' + clients.length + ' 位客戶';
@@ -696,7 +728,7 @@ function openDetail(id) {
 
 function closeDetail() {
   document.getElementById('detailPanel').classList.remove('open');
-  currentId = null; renderList(); renderBdayBanner();
+  currentId = null; renderList(); renderMonthChips(); renderBdayBanner();
 }
 
 function renderDetail(c) {
