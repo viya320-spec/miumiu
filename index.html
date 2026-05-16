@@ -416,7 +416,7 @@ async function onSignedIn(token, email) {
 function signIn() {
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly email profile',
     callback: async function(resp) {
       if (resp.error) { showToast('登入失敗', 'err'); return; }
       var info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + resp.access_token } }).then(function(r) { return r.json(); });
@@ -451,7 +451,7 @@ async function tryAutoLogin() {
       await new Promise(function(resolve, reject) {
         google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
-          scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+          scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly email profile',
           hint: email, prompt: '',
           callback: async function(resp) {
             if (resp.error) { reject(resp.error); return; }
@@ -472,7 +472,7 @@ setInterval(function() {
   if (!email || !accessToken) return;
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly email profile',
     hint: email, prompt: '',
     callback: function(resp) {
       if (!resp.error) {
