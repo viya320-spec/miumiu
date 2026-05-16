@@ -767,10 +767,15 @@ function confirmAddTag() {
   scheduleSync(); showToast('標籤已新增', 'ok');
 }
 
-// Wait for GSI to load then auto login
+// Wait for GSI to load then auto login - with 8 second timeout
+var gsiWaitCount = 0;
 function waitForGSI() {
+  gsiWaitCount++;
   if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
     tryAutoLogin();
+  } else if (gsiWaitCount > 40) {
+    // Timeout after 8 seconds - show login screen anyway
+    showScreen('login');
   } else {
     setTimeout(waitForGSI, 200);
   }
