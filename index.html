@@ -210,6 +210,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
       </div>
     </div>
     <div class="chips" id="chipsRow"></div>
+<div id="birthdayBanner" style="display:none;margin:0 16px 12px;background:linear-gradient(135deg,#f87ab2,#a96cdc);border-radius:16px;padding:14px 16px;cursor:pointer;" onclick="toggleBirthdayPanel()">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:22px;">🎂</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#fff;" id="birthdayTitle">本月壽星</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.8);" id="birthdaySubtitle"></div>
+      </div>
+    </div>
+    <i class="ti ti-chevron-right" style="color:#fff;font-size:18px;" id="birthdayChevron"></i>
+  </div>
+</div>
+<div id="birthdayPanel" style="display:none;margin:0 16px 12px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);">
+  <div style="background:linear-gradient(135deg,#f87ab2,#a96cdc);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:15px;font-weight:700;color:#fff;">🎂 本月壽星</div>
+    <button onclick="toggleBirthdayPanel()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="birthdayList" style="padding:8px 0;"></div>
+</div>
     <div class="list" id="clientList"></div>
   </div>
 </div>
@@ -338,7 +357,7 @@ async function onSignedIn(token, email){
   document.getElementById('mainApp').style.display='block';
   await loadTags();
   await loadClients();
-  renderChips();renderList();
+  renderChips();renderList();renderBirthdayBanner();
 }
 
 function signIn(){
@@ -450,10 +469,74 @@ function renderChips(){
   });
   row.innerHTML=html;
 }
-function setFilter(f){currentFilter=f;renderChips();renderList();}
+function setFilter(f){currentFilter=f;renderChips();renderList();renderBirthdayBanner();}
+
+function getBirthdayClients(){
+  const now=new Date();
+  const month=now.getMonth()+1;
+  return clients.filter(function(c){
+    if(!c.birthday)return false;
+    const parts=c.birthday.split('-');
+    if(parts.length<2)return false;
+    return parseInt(parts[1])===month;
+  }).sort(function(a,b){
+    return parseInt(a.birthday.split('-')[2]||0)-parseInt(b.birthday.split('-')[2]||0);
+  });
+}
+
+function renderBirthdayBanner(){
+  const list=getBirthdayClients();
+  const banner=document.getElementById('birthdayBanner');
+  const subtitle=document.getElementById('birthdaySubtitle');
+  if(list.length>0){
+    banner.style.display='block';
+    subtitle.textContent='共 '+list.length+' 位，記得聯繫她們！';
+  } else {
+    banner.style.display='none';
+    document.getElementById('birthdayPanel').style.display='none';
+  }
+}
+
+function toggleBirthdayPanel(){
+  const panel=document.getElementById('birthdayPanel');
+  const chevron=document.getElementById('birthdayChevron');
+  if(panel.style.display==='none'){
+    panel.style.display='block';
+    chevron.style.transform='rotate(90deg)';
+    renderBirthdayList();
+  } else {
+    panel.style.display='none';
+    chevron.style.transform='';
+  }
+}
+
+function renderBirthdayList(){
+  const list=getBirthdayClients();
+  const el=document.getElementById('birthdayList');
+  if(!list.length){el.innerHTML='<div style="padding:16px;text-align:center;color:var(--text3);">本月無壽星</div>';return;}
+  el.innerHTML=list.map(function(c){
+    const day=c.birthday?c.birthday.split('-')[2]:'';
+    const ft=c.tags[0]?tagById(c.tags[0]):null;
+    const avatarBg=ft?'linear-gradient('+grad(ft.color)+')':'linear-gradient(135deg,#f87ab2,#a96cdc)';
+    const avatarText=ft?tagAbbr(ft.name):initials(c.name);
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f5f0ff;cursor:pointer;" onclick="openDetail(''+c.id+'')">'+
+      '<div style="width:40px;height:40px;border-radius:50%;background:'+avatarBg+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">'+avatarText+'</div>'+
+      '<div style="flex:1;">'+
+      '<div style="font-size:16px;font-weight:600;color:var(--text1);">'+c.name+'</div>'+
+      '<div style="font-size:13px;color:var(--text2);">生日：'+c.birthday+(day?'　本月 '+parseInt(day)+'日':'')+'</div>'+
+      '</div>'+
+      '<span style="font-size:20px;">🎂</span>'+
+      '</div>';
+  }).join('');
+}
 
 // ── List ──
 function initials(n){return n?n.slice(0,2):'??';}
+function tagAbbr(name){
+  const map={'舊客':'舊','未成交':'未','電話客':'電','客訴':'訴'};
+  if(map[name])return map[name];
+  return name.slice(0,1);
+}
 function renderList(){
   const q=document.getElementById('searchInput').value.trim();
   const list=clients.filter(function(c){
@@ -508,7 +591,7 @@ document.getElementById('noteModal').addEventListener('click',function(e){if(e.t
 
 function closeDetail(){
   document.getElementById('detailPanel').classList.remove('open');
-  currentId=null;renderList();
+  currentId=null;renderList();renderBirthdayBanner();
 }
 function renderDetail(c){
   const sorted=(c.records||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);});
@@ -585,7 +668,7 @@ function closeNewModal(){document.getElementById('newModal').classList.remove('o
 function createClient(){
   const name=document.getElementById('newName').value.trim();if(!name){alert('請輸入姓名');return;}
   const c={id:Date.now().toString(),name:name,birthday:document.getElementById('newBday').value,tags:[],records:[],createdAt:new Date().toISOString()};
-  clients.unshift(c);closeNewModal();renderList();openDetail(c.id);scheduleSync();
+  clients.unshift(c);closeNewModal();renderList();renderBirthdayBanner();openDetail(c.id);scheduleSync();
 }
 document.getElementById('newModal').addEventListener('click',function(e){if(e.target===this)closeNewModal();});
 
