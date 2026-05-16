@@ -571,16 +571,26 @@ async function loadTags() {
     if (rows.length) {
       tags = rows.map(function(r) { return { id: r[0] || '', name: r[1] || '', color: r[2] || '#8aa898' }; }).filter(function(t) { return t.id; });
     }
-    // Merge DEFAULT_TAGS - add any missing default tags
+    // Merge DEFAULT_TAGS - add missing, update existing, no duplicates
     DEFAULT_TAGS.forEach(function(dt) {
-      var exists = tags.filter(function(t) { return t.id === dt.id; })[0];
-      if (!exists) {
-        tags.push(dt);
+      // Check by id OR by name to avoid duplicates
+      var existsById = tags.filter(function(t) { return t.id === dt.id; })[0];
+      var existsByName = tags.filter(function(t) { return t.name === dt.name; })[0];
+      if (existsById) {
+        existsById.color = dt.color;
+      } else if (existsByName) {
+        existsByName.id = dt.id;
+        existsByName.color = dt.color;
       } else {
-        // Update color to latest default color
-        exists.color = dt.color;
-        exists.name = dt.name;
+        tags.push(dt);
       }
+    });
+    // Remove duplicate names - keep first occurrence
+    var seen = {};
+    tags = tags.filter(function(t) {
+      if (seen[t.name]) return false;
+      seen[t.name] = true;
+      return true;
     });
   } catch(e) {
     tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
@@ -762,7 +772,9 @@ function renderDetail(c) {
 
   var tagChips = tags.map(function(t) {
     var on = c.tags.indexOf(t.id) >= 0;
-    return '<button class="tag-pill' + (on ? ' on" style="background:linear-gradient(' + gradStr(t.color) + ')' : '"') + '" onclick="toggleTag(\'' + t.id + '\',this,\'' + t.color + '\')">' + t.name + '</button>';
+    var isDefault = DEFAULT_TAGS.filter(function(d){ return d.id === t.id; }).length > 0;
+    var delBtn = !isDefault ? '<span onclick="deleteTag(\'' + t.id + '\',event)" style="margin-left:4px;opacity:.6;font-size:13px;cursor:pointer;">✕</span>' : '';
+    return '<button class="tag-pill' + (on ? ' on" style="background:linear-gradient(' + gradStr(t.color) + ')' : '"') + '" onclick="toggleTag(\'' + t.id + '\',this,\'' + t.color + '\')">' + t.name + delBtn + '</button>';
   }).join('');
 
   var recsHtml = sorted.map(function(r, idx) {
@@ -801,6 +813,23 @@ function renderDetail(c) {
 function liveUpdate(f, v) {
   var c = clients.filter(function(x) { return x.id === currentId; })[0];
   if (c) { c[f] = v; if (f === 'name') document.getElementById('panelTitle').textContent = v || '客戶資料'; }
+}
+
+function deleteTag(tid, event) {
+  event.stopPropagation();
+  var t = tags.filter(function(t) { return t.id === tid; })[0];
+  if (!t) return;
+  if (!confirm('確定要刪除標籤「' + t.name + '」嗎？')) return;
+  tags = tags.filter(function(t) { return t.id !== tid; });
+  // Remove tag from all clients
+  clients.forEach(function(c) {
+    c.tags = c.tags.filter(function(tg) { return tg !== tid; });
+  });
+  renderChips();
+  var c = clients.filter(function(x) { return x.id === currentId; })[0];
+  if (c) renderDetail(c);
+  scheduleSync();
+  showToast('標籤已刪除', 'ok');
 }
 
 function toggleTag(k, btn, color) {
