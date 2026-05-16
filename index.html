@@ -213,6 +213,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
     <div class="s-user"><i class="ti ti-user-circle" style="font-size:14px;flex-shrink:0"></i><span class="s-email" id="userEmail"></span></div>
     <div class="s-right">
       <span class="sync-dot" id="syncDot"><i class="ti ti-cloud-check"></i> 已同步</span>
+      <button class="btn-out" onclick="resetTagColors()" style="color:#8a7d9e;">重設標籤</button>
       <button class="btn-out" onclick="signOut()">登出</button>
     </div>
   </div>
@@ -568,9 +569,29 @@ async function loadTags() {
     var res = await sheetsReq('/' + SHEET_ID + '/values/' + encodeURIComponent(TAG_SHEET + '!A2:C'));
     var rows = res.values || [];
     if (rows.length) {
-      tags = rows.map(function(r) { return { id: r[0] || '', name: r[1] || '', color: r[2] || '#e8709e' }; }).filter(function(t) { return t.id; });
+      tags = rows.map(function(r) { return { id: r[0] || '', name: r[1] || '', color: r[2] || '#8aa898' }; }).filter(function(t) { return t.id; });
     }
-  } catch(e) {}
+    // Merge DEFAULT_TAGS - add any missing default tags
+    DEFAULT_TAGS.forEach(function(dt) {
+      var exists = tags.filter(function(t) { return t.id === dt.id; })[0];
+      if (!exists) {
+        tags.push(dt);
+      } else {
+        // Update color to latest default color
+        exists.color = dt.color;
+        exists.name = dt.name;
+      }
+    });
+  } catch(e) {
+    tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+  }
+}
+
+async function resetTagColors() {
+  tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+  await syncAll(false);
+  renderChips();
+  showToast('✓ 標籤已重設', 'ok');
 }
 
 async function syncAll(silent) {
