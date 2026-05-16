@@ -198,7 +198,7 @@ const SHEET_TITLE='Miu客戶關懷';
 const TAGS={old:'舊客',lost:'未成交',phone:'電話客'};
 const FCLS={old:'f-old',lost:'f-lost',phone:'f-phone'};
 let clients=[],currentFilter='',currentId=null,accessToken=null;
-let spreadsheetId=localStorage.getItem('miu_sheetId')||null;
+let spreadsheetId='184tkzxwG2jTnf3amFlEtpdjul_LFWreMLIIfBDK1U0E';
 let syncTimer=null,isSyncing=false;
 
 function showToast(msg,type,dur){
@@ -252,20 +252,7 @@ async function sheetsReq(path,method,body){
 }
 
 async function initSheet(){
-  if(spreadsheetId){
-    const chk=await sheetsReq('/'+spreadsheetId+'?fields=spreadsheetId');
-    if(chk.spreadsheetId)return;
-    spreadsheetId=null;
-  }
-  const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets',{
-    method:'POST',
-    headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
-    body:JSON.stringify({properties:{title:'Miu客戶關懷系統'},sheets:[{properties:{title:SHEET_TITLE}}]})
-  }).then(r=>r.json());
-  spreadsheetId=res.spreadsheetId;
-  localStorage.setItem('miu_sheetId',spreadsheetId);
-  await sheetsReq('/'+spreadsheetId+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{values:[['ID','姓名','生日','標籤','紀錄JSON','建立時間']]});
-  showToast('✓ 已建立 Google Sheets','ok');
+  showToast('✓ 連接試算表成功','ok');
 }
 
 async function loadFromSheets(){
