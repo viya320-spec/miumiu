@@ -153,8 +153,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 
 <div class="toast" id="toast"></div>
 
+<!-- Loading -->
+<div id="loadingScreen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(145deg,#e8f8f1 0%,#e8eeff 50%,#f5e8f8 100%);gap:16px;">
+  <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#a8edcc,#7ec8e3);display:flex;align-items:center;justify-content:center;font-size:36px;">🌿</div>
+  <div style="font-size:18px;font-weight:700;color:#2d2d3a;">Miu 客戶關懷</div>
+  <div style="font-size:14px;color:#6b6b80;">載入中…</div>
+</div>
+
 <!-- Login -->
-<div id="loginScreen" class="login">
+<div id="loginScreen" class="login" style="display:none;">
   <div class="login-blob">🌿</div>
   <div>
     <div class="login-title">Miu 客戶關懷</div>
@@ -246,7 +253,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://accounts.google.com/gsi/client" async onload="tryAutoLogin()"></script>
 <script>
 const CLIENT_ID='543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
 const SHEET_ID='184tkzxwG2jTnf3amFlEtpdjul_LFWreMLIIfBDK1U0E';
@@ -274,32 +281,103 @@ function setSyncDot(s){
   else{el.className='sync-dot err';el.innerHTML='<i class="ti ti-cloud-off"></i> 失敗';}
 }
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(function(){syncAll(true);},1500);}
+
+// Auto refresh token every 45 mins
+setInterval(function(){
+  const email=localStorage.getItem('miu_email');
+  if(!email||!accessToken)return;
+  google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID,
+    scope:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+    hint:email,
+    prompt:'',
+    callback:function(resp){
+      if(!resp.error){
+        accessToken=resp.access_token;
+        localStorage.setItem('miu_token',resp.access_token);
+        localStorage.setItem('miu_token_ts',Date.now().toString());
+      }
+    }
+  }).requestAccessToken();
+}, 45*60*1000);
 function tagById(id){return tags.find(function(t){return t.id===id;})||{name:id,color:'#aaa'};}
 function grad(color){return GRAD_MAP[color]||'135deg,'+color+','+color;}
 
 // ── Auth ──
+async function onSignedIn(token, email){
+  accessToken=token;
+  localStorage.setItem('miu_token', token);
+  localStorage.setItem('miu_email', email);
+  localStorage.setItem('miu_token_ts', Date.now().toString());
+  document.getElementById('userEmail').textContent=email;
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  await loadTags();
+  await loadClients();
+  renderChips();renderList();
+}
+
 function signIn(){
   google.accounts.oauth2.initTokenClient({
     client_id:CLIENT_ID,
     scope:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
     callback:async function(resp){
       if(resp.error){showToast('登入失敗','err');return;}
-      accessToken=resp.access_token;
-      const info=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}}).then(function(r){return r.json();});
-      document.getElementById('userEmail').textContent=info.email||'';
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('mainApp').style.display='block';
-      await loadTags();
-      await loadClients();
-      renderChips();renderList();
+      const info=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+resp.access_token}}).then(function(r){return r.json();});
+      await onSignedIn(resp.access_token, info.email||'');
     }
   }).requestAccessToken();
 }
+
 function signOut(){
   if(accessToken)google.accounts.oauth2.revoke(accessToken,function(){});
   accessToken=null;
+  localStorage.removeItem('miu_token');
+  localStorage.removeItem('miu_email');
+  localStorage.removeItem('miu_token_ts');
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('mainApp').style.display='none';
+}
+
+async function tryAutoLogin(){
+  const token=localStorage.getItem('miu_token');
+  const email=localStorage.getItem('miu_email');
+  const ts=parseInt(localStorage.getItem('miu_token_ts')||'0');
+  // Token valid for 50 mins (Google tokens last 60 mins)
+  if(token && email && (Date.now()-ts < 50*60*1000)){
+    // Verify token still valid
+    try{
+      const test=await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token='+token);
+      const data=await test.json();
+      if(data.email || data.sub){
+        await onSignedIn(token, email);
+        return;
+      }
+    }catch(e){}
+  }
+  // Token expired - try silent refresh
+  if(email){
+    try{
+      await new Promise(function(resolve, reject){
+        google.accounts.oauth2.initTokenClient({
+          client_id:CLIENT_ID,
+          scope:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+          hint:email,
+          prompt:'',
+          callback:async function(resp){
+            if(resp.error){reject(resp.error);return;}
+            await onSignedIn(resp.access_token, email);
+            resolve();
+          }
+        }).requestAccessToken();
+      });
+      return;
+    }catch(e){}
+  }
+  // Show login screen
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
 }
 
 // ── Sheets ──
