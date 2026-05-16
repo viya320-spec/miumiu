@@ -130,10 +130,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .rec-field input{width:100%;font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;padding:6px 0 10px;}
 .rec-field input::placeholder{color:var(--t3);}
 .note-wrap{padding:6px 0 10px;}
-.note-full{font-size:16px;color:var(--t1);line-height:1.7;white-space:pre-wrap;word-break:break-all;}
+.note-full{font-size:16px;color:var(--t1);line-height:1.8;white-space:pre-wrap;word-break:break-word;padding-bottom:8px;}
 .note-empty{font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;width:100%;resize:none;line-height:1.7;min-height:70px;padding:0;}
 .note-empty::placeholder{color:var(--t3);}
-.btn-expand{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#8a7d9e;background:rgba(138,125,158,.1);border:none;border-radius:20px;padding:4px 12px;cursor:pointer;margin-top:4px;margin-bottom:2px;}
+
 
 /* Delete */
 .btn-del{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 16px 0;width:calc(100% - 32px);padding:15px;font-size:16px;font-weight:600;color:#ff3b30;background:var(--card);border:none;border-radius:var(--rl);cursor:pointer;box-shadow:var(--sh2);}
@@ -657,9 +657,9 @@ function renderDetail(c) {
 
   var recsHtml = sorted.map(function(r, idx) {
     var bg = REC_COLORS[idx % REC_COLORS.length];
+    var safeN = r.note ? r.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'<br>').replace(/\n/g,'<br>') : '';
     var noteHtml = r.note
-      ? '<div class="note-wrap"><div class="note-preview">' + r.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
-        '<button class="btn-expand" onclick="openNoteModal(' + JSON.stringify(r.note) + ')"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> 展開全文</button></div>'
+      ? '<div class="note-wrap"><div class="note-full">' + safeN + '</div>'
       : '<div class="note-wrap"><textarea class="note-empty" placeholder="私人備註…" onchange="updateRec(\'' + r.id + '\',\'note\',this.value)"></textarea></div>';
 
     return '<div class="rec-card" style="background:' + bg + ';">' +
