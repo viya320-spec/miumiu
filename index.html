@@ -130,10 +130,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .rec-field input{width:100%;font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;padding:6px 0 10px;}
 .rec-field input::placeholder{color:var(--t3);}
 .note-wrap{padding:6px 0 10px;}
-.note-preview{font-size:16px;color:var(--t1);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.note-empty{font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;width:100%;resize:none;line-height:1.6;min-height:70px;padding:0;}
+.note-full{font-size:16px;color:var(--t1);line-height:1.7;white-space:pre-wrap;word-break:break-all;}
+.note-empty{font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;width:100%;resize:none;line-height:1.7;min-height:70px;padding:0;}
 .note-empty::placeholder{color:var(--t3);}
-.btn-expand{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--p2);background:rgba(158,104,212,.1);border:none;border-radius:20px;padding:4px 12px;cursor:pointer;margin-top:6px;margin-bottom:2px;}
+.btn-expand{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--p2);background:rgba(158,104,212,.1);border:none;border-radius:20px;padding:4px 12px;cursor:pointer;margin-top:4px;margin-bottom:2px;}
 
 /* Delete */
 .btn-del{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 16px 0;width:calc(100% - 32px);padding:15px;font-size:16px;font-weight:600;color:#ff3b30;background:var(--card);border:none;border-radius:var(--rl);cursor:pointer;box-shadow:var(--sh2);}
@@ -715,6 +715,22 @@ function deleteClient() {
   if (!confirm('再次確認：真的要永久刪除「' + c.name + '」的所有資料嗎？')) return;
   clients = clients.filter(function(x) { return x.id !== currentId; });
   closeDetail(); scheduleSync(); showToast('已刪除 ' + c.name);
+}
+
+// ── Edit note inline
+function editNote(btn) {
+  var wrap = btn.parentElement;
+  var fullDiv = wrap.querySelector('.note-full');
+  var textarea = wrap.querySelector('.note-empty');
+  var text = fullDiv ? fullDiv.textContent : '';
+  if (textarea) {
+    textarea.value = text;
+    textarea.style.display = 'block';
+    textarea.style.minHeight = '100px';
+    textarea.focus();
+  }
+  if (fullDiv) fullDiv.style.display = 'none';
+  btn.style.display = 'none';
 }
 
 // ── Note modal ─────────────────────────────────────────────────
