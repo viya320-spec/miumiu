@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>診所客戶資料系統</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue0:#f0f7ff;--blue1:#daeeff;--blue2:#b3d9f7;--blue3:#7dbfe8;
+  --blue4:#4a9fd4;--blue5:#2278b0;
+  --text1:#1a3a50;--text2:#4a6f87;--text3:#7a9db5;
+  --bg:#f5faff;--card:#fff;--border:#c8e2f5;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);-webkit-tap-highlight-color:transparent;}
+.app{padding-bottom:80px;background:var(--bg);min-height:100vh;}
+.topbar{background:var(--blue4);padding:18px 16px 14px;position:sticky;top:0;z-index:10;}
+.topbar-title{font-size:20px;font-weight:600;color:#fff;margin-bottom:12px;}
+.search-row{display:flex;gap:8px;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text2);}
+.search-wrap input{width:100%;padding:12px 12px 12px 38px;font-size:17px;border:none;border-radius:12px;background:#fff;color:var(--text1);-webkit-appearance:none;}
+.search-wrap input:focus{outline:2px solid var(--blue3);}
+.btn-add{display:flex;align-items:center;gap:5px;padding:12px 16px;font-size:16px;font-weight:600;border:none;border-radius:12px;background:#fff;color:var(--blue5);cursor:pointer;white-space:nowrap;}
+.filter-row{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:var(--blue0);border-bottom:1px solid var(--border);}
+.filter-row::-webkit-scrollbar{display:none;}
+.tag-btn{padding:9px 18px;border-radius:20px;font-size:15px;border:1.5px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;white-space:nowrap;-webkit-appearance:none;}
+.tag-btn.a-all{background:var(--blue4);color:#fff;border-color:var(--blue4);font-weight:600;}
+.tag-btn.a-old{background:#dbeafe;color:#1e40af;border-color:#93c5fd;font-weight:600;}
+.tag-btn.a-lost{background:#fef3c7;color:#92400e;border-color:#fcd34d;font-weight:600;}
+.tag-btn.a-phone{background:#d1fae5;color:#065f46;border-color:#6ee7b7;font-weight:600;}
+.client-list{padding:14px;display:flex;flex-direction:column;gap:10px;}
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;}
+.client-card:active{transform:scale(0.98);}
+.card-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--blue1);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--blue5);flex-shrink:0;border:2px solid var(--blue2);}
+.client-name{font-size:19px;font-weight:600;color:var(--text1);}
+.client-bday{font-size:14px;color:var(--text3);margin-top:2px;}
+.tag-list{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.tag{font-size:13px;padding:4px 12px;border-radius:20px;font-weight:600;}
+.tag.old{background:#dbeafe;color:#1e40af;}
+.tag.lost{background:#fef3c7;color:#92400e;}
+.tag.phone{background:#d1fae5;color:#065f46;}
+.record-preview{font-size:14px;color:var(--text3);}
+.empty{text-align:center;padding:60px 16px;color:var(--text3);font-size:16px;line-height:2;}
+.panel{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:20;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;transform:translateX(100%);transition:transform .25s ease;}
+.panel.open{transform:translateX(0);}
+.panel-header{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--blue4);z-index:5;}
+.btn-back{display:flex;align-items:center;padding:8px;border:none;background:rgba(255,255,255,.2);border-radius:10px;cursor:pointer;color:#fff;font-size:26px;}
+.panel-title{font-size:18px;font-weight:600;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-save{display:flex;align-items:center;gap:5px;padding:10px 16px;font-size:15px;font-weight:600;border:none;border-radius:10px;background:#fff;color:var(--blue5);cursor:pointer;white-space:nowrap;}
+.panel-body{padding:16px;display:flex;flex-direction:column;gap:18px;}
+.field-label{font-size:14px;color:var(--text2);font-weight:600;margin-bottom:6px;}
+.field-input{padding:14px;font-size:17px;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--text1);width:100%;-webkit-appearance:none;}
+.field-input:focus{outline:none;border-color:var(--blue3);}
+.tag-select{display:flex;gap:8px;flex-wrap:wrap;}
+.tag-toggle{padding:11px 22px;border-radius:20px;font-size:16px;border:1.5px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;-webkit-appearance:none;}
+.tag-toggle.old.on{background:#dbeafe;color:#1e40af;border-color:#93c5fd;font-weight:600;}
+.tag-toggle.lost.on{background:#fef3c7;color:#92400e;border-color:#fcd34d;font-weight:600;}
+.tag-toggle.phone.on{background:#d1fae5;color:#065f46;border-color:#6ee7b7;font-weight:600;}
+.section-hd{font-size:17px;font-weight:600;color:var(--text1);display:flex;align-items:center;justify-content:space-between;}
+.btn-add-rec{display:flex;align-items:center;gap:4px;font-size:15px;padding:9px 16px;border:1.5px solid var(--blue3);border-radius:10px;background:var(--blue0);color:var(--blue5);cursor:pointer;font-weight:600;}
+.record-item{border:1.5px solid var(--blue2);border-radius:16px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:12px;}
+.rec-date-row{display:flex;align-items:center;gap:8px;}
+.rec-date-input{flex:1;padding:10px 12px;font-size:16px;border:1.5px solid var(--border);border-radius:10px;background:var(--blue0);color:var(--text1);-webkit-appearance:none;}
+.rec-delete{border:none;background:none;color:#f87171;font-size:26px;cursor:pointer;padding:4px 8px;}
+.textarea-field{padding:12px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--text1);width:100%;resize:none;line-height:1.6;-webkit-appearance:none;}
+.textarea-field:focus{outline:none;border-color:var(--blue3);}
+.divider{height:1px;background:var(--border);margin:4px 0;}
+.btn-del-client{margin:0 16px 16px;padding:16px;font-size:17px;border:1.5px solid #fca5a5;border-radius:14px;background:#fff5f5;color:#dc2626;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 32px);}
+.modal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,30,60,.45);z-index:30;display:none;align-items:flex-end;}
+.modal-backdrop.open{display:flex;}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 16px 48px;width:100%;display:flex;flex-direction:column;gap:16px;}
+.modal-title{font-size:19px;font-weight:600;color:var(--text1);}
+.modal-actions{display:flex;gap:10px;margin-top:4px;}
+.btn-cancel{flex:1;padding:16px;font-size:17px;border:1.5px solid var(--border);border-radius:14px;background:var(--blue0);color:var(--text2);cursor:pointer;}
+.btn-confirm{flex:1;padding:16px;font-size:17px;font-weight:600;border:none;border-radius:14px;background:var(--blue4);color:#fff;cursor:pointer;}
+.toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--blue5);color:#fff;padding:13px 28px;border-radius:30px;font-size:15px;font-weight:600;z-index:50;transition:transform .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;gap:22px;background:var(--bg);}
+.login-logo{width:80px;height:80px;border-radius:50%;background:var(--blue1);display:flex;align-items:center;justify-content:center;font-size:40px;border:2px solid var(--blue2);}
+.login-title{font-size:24px;font-weight:700;color:var(--text1);text-align:center;}
+.login-sub{font-size:16px;color:var(--text2);text-align:center;line-height:1.7;}
+.btn-google{display:flex;align-items:center;gap:12px;padding:16px 28px;font-size:17px;font-weight:600;border:1.5px solid var(--border);border-radius:16px;background:#fff;color:var(--text1);cursor:pointer;width:100%;justify-content:center;-webkit-appearance:none;}
+.btn-google svg{width:24px;height:24px;flex-shrink:0;}
+.sync-bar{background:var(--blue0);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;}
+.user-info{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);overflow:hidden;}
+.user-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;}
+.sync-btns{display:flex;gap:6px;flex-shrink:0;}
+.btn-sync{display:flex;align-items:center;gap:4px;padding:7px 13px;font-size:13px;border:1px solid var(--blue3);border-radius:8px;background:#fff;color:var(--blue5);cursor:pointer;font-weight:600;}
+.btn-logout{padding:7px 13px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text2);cursor:pointer;}
+.spinning{display:inline-block;animation:spin .8s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Login -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-logo"><i class="ti ti-heart-plus" style="color:#4a9fd4"></i></div>
+  <div class="login-title">診所客戶資料系統</div>
+  <div class="login-sub">請登入您的 Google 帳號<br>資料將安全儲存在您的 Google Sheets</div>
+  <button class="btn-google" onclick="signIn()">
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+    使用 Google 帳號登入
+  </button>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-title"><i class="ti ti-heart-plus"></i> 診所客戶資料</div>
+    <div class="search-row">
+      <div class="search-wrap">
+        <i class="ti ti-search"></i>
+        <input type="text" id="searchInput" placeholder="搜尋姓名…" oninput="renderList()" />
+      </div>
+      <button class="btn-add" onclick="openNewModal()">
+        <i class="ti ti-user-plus"></i> 新增
+      </button>
+    </div>
+  </div>
+  <div class="sync-bar">
+    <span class="user-info"><i class="ti ti-user-circle" style="font-size:16px;flex-shrink:0"></i> <span class="user-email" id="userEmail">載入中…</span></span>
+    <div class="sync-btns">
+      <button class="btn-sync" onclick="syncToSheets()" id="syncBtn"><i class="ti ti-cloud-upload" style="font-size:14px"></i> 同步雲端</button>
+      <button class="btn-logout" onclick="signOut()">登出</button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <button class="tag-btn a-all" id="fb-all" onclick="setFilter('')">全部</button>
+    <button class="tag-btn" id="fb-old" onclick="setFilter('old')">舊客</button>
+    <button class="tag-btn" id="fb-lost" onclick="setFilter('lost')">未成交</button>
+    <button class="tag-btn" id="fb-phone" onclick="setFilter('phone')">電話客</button>
+  </div>
+  <div class="client-list" id="clientList"></div>
+</div>
+
+<!-- Detail Panel -->
+<div class="panel" id="detailPanel">
+  <div class="panel-header">
+    <button class="btn-back" onclick="closeDetail()"><i class="ti ti-chevron-left"></i></button>
+    <span class="panel-title" id="panelTitle">客戶資料</span>
+    <button class="btn-save" onclick="saveClient()"><i class="ti ti-device-floppy"></i> 儲存</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+  <button class="btn-del-client" onclick="deleteClient()"><i class="ti ti-trash"></i> 刪除此客戶</button>
+</div>
+
+<!-- New Client Modal -->
+<div class="modal-backdrop" id="newModal">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-user-plus" style="color:#4a9fd4"></i> 新增客戶</div>
+    <div>
+      <div class="field-label">姓名 *</div>
+      <input class="field-input" type="text" id="newName" placeholder="請輸入姓名" />
+    </div>
+    <div>
+      <div class="field-label">生日</div>
+      <input class="field-input" type="date" id="newBday" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewModal()">取消</button>
+      <button class="btn-confirm" onclick="createClient()">新增</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script>
+const CLIENT_ID = '543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
+const SHEET_TITLE = '診所客戶資料';
+const TAGS = {old:'舊客', lost:'未成交', phone:'電話客'};
+const FCLS = {old:'a-old', lost:'a-lost', phone:'a-phone'};
+
+let clients = JSON.parse(localStorage.getItem('clinic_v3') || '[]');
+let currentFilter = '';
+let currentId = null;
+let accessToken = null;
+let spreadsheetId = localStorage.getItem('clinic_sheetId') || null;
+
+function persist(){ localStorage.setItem('clinic_v3', JSON.stringify(clients)); }
+
+function showToast(msg, dur=2200){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+// ── Google Auth ──────────────────────────────────────────────────
+function signIn(){
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file email profile',
+    callback: async (resp) => {
+      if(resp.error){ showToast('登入失敗：' + resp.error); return; }
+      accessToken = resp.access_token;
+      const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {Authorization: 'Bearer ' + accessToken}
+      }).then(r=>r.json());
+      document.getElementById('userEmail').textContent = info.email || '';
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      await initSheet();
+      await loadFromSheets();
+      renderList();
+    }
+  }).requestAccessToken();
+}
+
+function signOut(){
+  if(accessToken) google.accounts.oauth2.revoke(accessToken, ()=>{});
+  accessToken = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+  showToast('已登出');
+}
+
+// ── Sheets API ───────────────────────────────────────────────────
+async function sheetsReq(path, method='GET', body=null){
+  const opts = {method, headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'}};
+  if(body) opts.body = JSON.stringify(body);
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets'+path, opts).then(r=>r.json());
+}
+
+async function initSheet(){
+  if(spreadsheetId){
+    const chk = await sheetsReq('/'+spreadsheetId+'?fields=spreadsheetId');
+    if(chk.spreadsheetId) return;
+    spreadsheetId = null;
+  }
+  const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets',{
+    method:'POST',
+    headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+    body: JSON.stringify({properties:{title:'診所客戶資料系統'},sheets:[{properties:{title:SHEET_TITLE}}]})
+  }).then(r=>r.json());
+  spreadsheetId = res.spreadsheetId;
+  localStorage.setItem('clinic_sheetId', spreadsheetId);
+  await sheetsReq('/'+spreadsheetId+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{
+    values:[['ID','姓名','生日','標籤','紀錄JSON','建立時間']]
+  });
+  showToast('✓ 已在您的 Google Drive 建立試算表');
+}
+
+async function loadFromSheets(){
+  showToast('從雲端載入資料中…', 3000);
+  const res = await sheetsReq('/'+spreadsheetId+'/values/'+encodeURIComponent(SHEET_TITLE+'!A2:F'));
+  const rows = res.values || [];
+  if(!rows.length){ showToast('雲端尚無資料'); return; }
+  clients = rows.map(r=>({
+    id: r[0]||'',
+    name: r[1]||'',
+    birthday: r[2]||'',
+    tags: r[3] ? r[3].split(',').filter(Boolean) : [],
+    records: r[4] ? (() => { try{ return JSON.parse(r[4]); }catch(e){ return []; } })() : [],
+    createdAt: r[5]||''
+  })).filter(c=>c.id);
+  persist();
+  showToast('✓ 載入完成，共 '+clients.length+' 位客戶');
+}
+
+async function syncToSheets(){
+  if(!accessToken){ showToast('請先登入'); return; }
+  const btn = document.getElementById('syncBtn');
+  btn.innerHTML = '<span class="spinning"><i class="ti ti-loader" style="font-size:14px"></i></span> 同步中…';
+  btn.disabled = true;
+  try {
+    const values = [['ID','姓名','生日','標籤','紀錄JSON','建立時間']].concat(
+      clients.map(c=>[c.id, c.name, c.birthday||'', c.tags.join(','), JSON.stringify(c.records||[]), c.createdAt||''])
+    );
+    await sheetsReq('/'+spreadsheetId+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{values});
+    showToast('✓ 已同步到 Google Sheets');
+  } catch(e){ showToast('同步失敗，請重試'); }
+  btn.innerHTML = '<i class="ti ti-cloud-upload" style="font-size:14px"></i> 同步雲端';
+  btn.disabled = false;
+}
+
+// ── App ──────────────────────────────────────────────────────────
+function setFilter(f){
+  currentFilter = f;
+  ['all','old','lost','phone'].forEach(k=>document.getElementById('fb-'+k).className='tag-btn');
+  document.getElementById('fb-'+(f||'all')).classList.add(f ? FCLS[f] : 'a-all');
+  renderList();
+}
+
+function initials(n){ return n ? n.slice(0,2) : '??'; }
+
+function renderList(){
+  const q = document.getElementById('searchInput').value.trim();
+  const list = clients.filter(c=>{
+    if(q && !c.name.includes(q)) return false;
+    if(currentFilter && !c.tags.includes(currentFilter)) return false;
+    return true;
+  });
+  const el = document.getElementById('clientList');
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><i class="ti ti-users" style="font-size:40px;display:block;margin-bottom:12px;color:#b3d9f7"></i>尚無客戶資料<br><span style="font-size:14px">按右上角「新增」加入第一位客戶</span></div>';
+    return;
+  }
+  el.innerHTML = list.map(c=>{
+    const sorted = (c.records||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    const last = sorted[0]||null;
+    const tags = c.tags.map(t=>`<span class="tag ${t}">${TAGS[t]}</span>`).join('');
+    return `<div class="client-card" onclick="openDetail('${c.id}')">
+      <div class="card-top">
+        <div class="avatar">${initials(c.name)}</div>
+        <div>
+          <div class="client-name">${c.name}</div>
+          <div class="client-bday"><i class="ti ti-cake" style="font-size:13px;vertical-align:-1px"></i> ${c.birthday||'未填生日'}</div>
+        </div>
+      </div>
+      ${tags ? `<div class="tag-list">${tags}</div>` : ''}
+      <div class="record-preview"><i class="ti ti-calendar-event" style="font-size:14px;vertical-align:-1px"></i> ${last ? last.date+'　'+(last.procedure||'無療程項目') : '尚無預約紀錄'}</div>
+    </div>`;
+  }).join('');
+}
+
+function openDetail(id){
+  currentId = id;
+  const c = clients.find(x=>x.id===id);
+  document.getElementById('panelTitle').textContent = c.name;
+  renderDetail(c);
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open');
+  currentId = null;
+  renderList();
+}
+
+function renderDetail(c){
+  const sorted = (c.records||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const recsHtml = sorted.map(r=>`
+    <div class="record-item">
+      <div class="rec-date-row">
+        <i class="ti ti-calendar" style="font-size:20px;color:#7dbfe8;flex-shrink:0"></i>
+        <input type="date" class="rec-date-input" value="${r.date}" onchange="updateRec('${r.id}','date',this.value)" />
+        <button class="rec-delete" onclick="deleteRec('${r.id}')"><i class="ti ti-x"></i></button>
+      </div>
+      <div>
+        <div class="field-label">療程項目</div>
+        <input class="field-input" type="text" value="${r.procedure||''}" placeholder="例：水光、電波、玻尿酸…" onchange="updateRec('${r.id}','procedure',this.value)" />
+      </div>
+      <div>
+        <div class="field-label"><i class="ti ti-bell" style="font-size:14px;vertical-align:-1px"></i> 小叮嚀</div>
+        <textarea class="textarea-field" rows="2" placeholder="術前術後注意事項…" onchange="updateRec('${r.id}','reminder',this.value)">${r.reminder||''}</textarea>
+      </div>
+      <div>
+        <div class="field-label"><i class="ti ti-note" style="font-size:14px;vertical-align:-1px"></i> 小筆記</div>
+        <textarea class="textarea-field" rows="2" placeholder="私人備註…" onchange="updateRec('${r.id}','note',this.value)">${r.note||''}</textarea>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('panelBody').innerHTML = `
+    <div>
+      <div class="field-label">姓名</div>
+      <input class="field-input" type="text" id="edit-name" value="${c.name}" oninput="liveUpdate('name',this.value)" />
+    </div>
+    <div>
+      <div class="field-label">生日</div>
+      <input class="field-input" type="date" id="edit-bday" value="${c.birthday||''}" onchange="liveUpdate('birthday',this.value)" />
+    </div>
+    <div>
+      <div class="field-label">標籤</div>
+      <div class="tag-select">
+        ${Object.entries(TAGS).map(([k,v])=>`<button class="tag-toggle ${k} ${c.tags.includes(k)?'on':''}" onclick="toggleTag('${k}',this)">${v}</button>`).join('')}
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="section-hd">
+        預約紀錄
+        <button class="btn-add-rec" onclick="addRecord()"><i class="ti ti-plus"></i> 新增紀錄</button>
+      </div>
+    </div>
+    <div id="records-list" style="display:flex;flex-direction:column;gap:12px;">
+      ${recsHtml || '<div style="color:#7a9db5;font-size:15px;text-align:center;padding:12px 0;">尚無預約紀錄<br>按「新增紀錄」開始記錄</div>'}
+    </div>`;
+}
+
+function liveUpdate(f,v){
+  const c = clients.find(x=>x.id===currentId);
+  if(c){ c[f]=v; document.getElementById('panelTitle').textContent = c.name||'客戶資料'; }
+}
+
+function toggleTag(k,btn){
+  const c = clients.find(x=>x.id===currentId); if(!c) return;
+  if(c.tags.includes(k)){ c.tags=c.tags.filter(t=>t!==k); btn.classList.remove('on'); }
+  else{ c.tags.push(k); btn.classList.add('on'); }
+}
+
+function addRecord(){
+  const c = clients.find(x=>x.id===currentId); if(!c) return;
+  const r = {id:Date.now().toString(), date:new Date().toISOString().slice(0,10), procedure:'', reminder:'', note:''};
+  c.records = c.records||[]; c.records.unshift(r); renderDetail(c);
+}
+
+function updateRec(rid,field,val){
+  const c = clients.find(x=>x.id===currentId); if(!c) return;
+  const r = c.records.find(r=>r.id===rid); if(r) r[field]=val;
+}
+
+function deleteRec(rid){
+  const c = clients.find(x=>x.id===currentId); if(!c) return;
+  c.records = c.records.filter(r=>r.id!==rid); renderDetail(c);
+}
+
+function saveClient(){
+  const c = clients.find(x=>x.id===currentId); if(!c) return;
+  c.name = document.getElementById('edit-name').value;
+  c.birthday = document.getElementById('edit-bday').value;
+  persist();
+  showToast('✓ 已儲存！記得按「同步雲端」上傳');
+}
+
+function deleteClient(){
+  if(!confirm('確定要刪除「'+clients.find(x=>x.id===currentId)?.name+'」嗎？')) return;
+  clients = clients.filter(x=>x.id!==currentId);
+  persist(); closeDetail();
+}
+
+function openNewModal(){
+  document.getElementById('newModal').classList.add('open');
+  document.getElementById('newName').value='';
+  document.getElementById('newBday').value='';
+  setTimeout(()=>document.getElementById('newName').focus(),150);
+}
+function closeNewModal(){ document.getElementById('newModal').classList.remove('open'); }
+
+function createClient(){
+  const name = document.getElementById('newName').value.trim();
+  if(!name){ alert('請輸入姓名'); return; }
+  const c = {id:Date.now().toString(), name, birthday:document.getElementById('newBday').value, tags:[], records:[], createdAt:new Date().toISOString()};
+  clients.unshift(c); persist(); closeNewModal(); renderList(); openDetail(c.id);
+}
+
+document.getElementById('newModal').addEventListener('click', function(e){ if(e.target===this) closeNewModal(); });
+</script>
+</body>
+</html>
