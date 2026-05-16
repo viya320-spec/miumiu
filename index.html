@@ -301,11 +301,12 @@ var REC_COLORS = [
   'linear-gradient(160deg,#eaeef0,#f0ebe8)'
 ];
 var DEFAULT_TAGS = [
-  {id:'old',name:'舊客',color:'#b8927a'},
+  {id:'old',name:'舊客',color:'#8aa898'},
   {id:'lost',name:'未成交',color:'#c4a882'},
-  {id:'phone',name:'電話客',color:'#8a7d9e'}
+  {id:'phone',name:'電話客',color:'#8a9aaa'},
+  {id:'complain',name:'客訴客',color:'#b88a8a'}
 ];
-var TAG_ABBR_MAP = {'舊客':'舊','未成交':'未','電話客':'電','客訴':'訴'};
+var TAG_ABBR_MAP = {'舊客':'舊','未成交':'未','電話客':'電','客訴客':'訴','客訴':'訴'};
 
 var clients = [];
 var tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
@@ -364,7 +365,9 @@ function gradStr(color) {
     '#c4a882': '135deg,#c4a882,#b8a078',
     '#9aaa8a': '135deg,#9aaa8a,#7a9e9e',
     '#b88a8a': '135deg,#b88a8a,#9e8a9e',
-    '#8a9aaa': '135deg,#8a9aaa,#7a9e9e',
+    '#8a9aaa': '135deg,#8a9aaa,#7a9ab0',
+    '#8aa898': '135deg,#8aa898,#7a9e9e',
+    '#b88a8a': '135deg,#b88a8a,#9e8898',
     '#aa8a9e': '135deg,#aa8a9e,#8a7d9e',
     '#007aff': '135deg,#8a9aaa,#7a9e9e',
     '#ff9500': '135deg,#c4a882,#b8927a',
