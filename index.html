@@ -78,7 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .list{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;}
 .client-card{background:var(--card);border-radius:var(--rl);box-shadow:var(--sh2);overflow:hidden;cursor:pointer;}
 .client-card:active{transform:scale(.98);}
-.card-accent{height:5px;}
+.card-accent{height:4px;opacity:.75;}
 .card-body{display:flex;align-items:center;gap:12px;padding:13px 16px;}
 .avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;}
 .card-info{flex:1;min-width:0;}
@@ -356,17 +356,30 @@ function tagAbbr(name) {
 function initials(n) { return n ? n.slice(0, 2) : '??'; }
 
 function gradStr(color) {
+  // Morandi mapping - any color gets converted to muted morandi version
   var map = {
     '#b8927a': '135deg,#b8927a,#c4a882',
-    '#8a7d9e': '135deg,#8a7d9e,#7a9e9e',
-    '#7a9e9e': '135deg,#7a9e9e,#8a9aaa',
-    '#c4a882': '135deg,#c4a882,#b8927a',
+    '#8a7d9e': '135deg,#8a7d9e,#9e96b8',
+    '#7a9e9e': '135deg,#7a9e9e,#8ab0aa',
+    '#c4a882': '135deg,#c4a882,#b8a078',
     '#9aaa8a': '135deg,#9aaa8a,#7a9e9e',
-    '#b88a8a': '135deg,#b88a8a,#8a7d9e',
+    '#b88a8a': '135deg,#b88a8a,#9e8a9e',
     '#8a9aaa': '135deg,#8a9aaa,#7a9e9e',
-    '#aa8a9e': '135deg,#aa8a9e,#8a7d9e'
+    '#aa8a9e': '135deg,#aa8a9e,#8a7d9e',
+    '#007aff': '135deg,#8a9aaa,#7a9e9e',
+    '#ff9500': '135deg,#c4a882,#b8927a',
+    '#ff3b30': '135deg,#b88a8a,#9e8a8a',
+    '#34c79a': '135deg,#7a9e9e,#9aaa8a',
+    '#4cd964': '135deg,#9aaa8a,#7a9e9e',
+    '#5ac8fa': '135deg,#8a9aaa,#9e96b8',
+    '#ffcc00': '135deg,#c4a882,#c4b078',
+    '#ff6b9d': '135deg,#b8927a,#aa8a9e',
+    '#9e68d4': '135deg,#8a7d9e,#9e96b8',
+    '#6278cc': '135deg,#8a9aaa,#8a7d9e',
+    '#e8709e': '135deg,#b8927a,#aa8a9e',
+    '#f0a070': '135deg,#c4a882,#b8927a'
   };
-  return map[color] || ('135deg,' + color + ',' + color);
+  return map[color] || '135deg,#b8927a,#8a7d9e';
 }
 
 // ── Auth ───────────────────────────────────────────────────────
