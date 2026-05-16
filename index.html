@@ -106,8 +106,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 .rec-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;}
 .rec-hdr-t{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;}
 .btn-addrec{display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--mint-d);background:rgba(52,199,154,.12);border:none;border-radius:20px;padding:6px 14px;cursor:pointer;}
-.rec-card{background:#fff;border-radius:var(--r-lg);margin:0 16px 10px;box-shadow:var(--shadow-sm);overflow:hidden;}
-.rec-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(135deg,rgba(212,245,233,.6),rgba(221,232,255,.6));border-bottom:1px solid var(--sep);}
+.rec-card{border-radius:var(--r-lg);margin:0 16px 10px;box-shadow:var(--shadow-sm);overflow:hidden;}
+.rec-card:nth-child(1){background:linear-gradient(160deg,#e8f8f2,#eef4ff);}
+.rec-card:nth-child(2){background:linear-gradient(160deg,#fef0f5,#f0eeff);}
+.rec-card:nth-child(3){background:linear-gradient(160deg,#fff8e8,#e8f8f2);}
+.rec-card:nth-child(4){background:linear-gradient(160deg,#eef4ff,#fef0f5);}
+.rec-card:nth-child(n+5){background:linear-gradient(160deg,#f0eeff,#fff8e8);}
+.rec-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);}
 .rec-date{font-size:15px;font-weight:700;color:var(--mint-d);border:none;background:transparent;outline:none;}
 .btn-recdel{background:none;border:none;color:#ff3b30;font-size:20px;cursor:pointer;}
 .rec-field{padding:0 14px;border-bottom:1px solid var(--sep);}
@@ -309,7 +314,7 @@ async function loadClients(){
   try{
     const res=await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(SHEET_TITLE+'!A2:F'));
     const rows=res.values||[];
-    clients=rows.map(function(r){return{id:r[0]||'',name:r[1]||'',birthday:r[2]||'',tags:r[3]?r[3].split(',').filter(Boolean):[],records:r[4]?(function(){try{return JSON.parse(r[4]);}catch(e){return[];}})():[],createdAt:r[5]||''};}).filter(function(c){return c.id;});
+    clients=rows.map(function(r){return{id:r[0]||'',name:r[1]||'',birthday:r[2]||'',tags:r[3]?r[3].split(',').filter(Boolean):[],records:r[4]?(function(){try{return JSON.parse(r[4]);}catch(e){return[];}})():[],createdAt:r[5]||'',code:r[6]||''};}).filter(function(c){return c.id;});
     setSyncDot('ok');
   }catch(e){setSyncDot('err');}
 }
@@ -324,7 +329,7 @@ async function syncAll(silent){
   if(!accessToken||isSyncing)return;
   isSyncing=true;setSyncDot('syncing');
   try{
-    const cv=[['ID','姓名','生日','標籤','紀錄JSON','建立時間']].concat(clients.map(function(c){return[c.id,c.name,c.birthday||'',c.tags.join(','),JSON.stringify(c.records||[]),c.createdAt||''];}));
+    const cv=[['ID','姓名','生日','標籤','紀錄JSON','建立時間']].concat(clients.map(function(c){return[c.id,c.name,c.birthday||'',c.tags.join(','),JSON.stringify(c.records||[]),c.createdAt||'',c.code||''];}));
     await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{values:cv});
     const tv=[['ID','名稱','顏色']].concat(tags.map(function(t){return[t.id,t.name,t.color];}));
     await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(TAG_SHEET+'!A1')+'?valueInputOption=RAW','PUT',{values:tv});
@@ -373,7 +378,7 @@ function renderList(){
       '<div class="card-body">'+
       '<div class="avatar" style="background:'+avatarBg+';color:#fff;">'+initials(c.name)+'</div>'+
       '<div class="card-info">'+
-      '<div class="card-name">'+c.name+'</div>'+
+      '<div class="card-name">'+c.name+(c.code?' <span style="font-size:13px;font-weight:500;color:var(--text3);background:#f0f0f0;padding:2px 8px;border-radius:10px;">#'+c.code+'</span>':'')+'</div>'+
       (c.birthday?'<div class="card-bday"><i class="ti ti-cake" style="font-size:11px;vertical-align:-1px"></i> '+c.birthday+'</div>':'')+
       (tpills?'<div class="card-tags">'+tpills+'</div>':'')+
       '</div><i class="ti ti-chevron-right card-chevron"></i></div>'+
@@ -415,6 +420,7 @@ function renderDetail(c){
   document.getElementById('panelBody').innerHTML=
     '<div class="form-card"><div class="form-card-title">基本資料</div>'+
     '<div class="frow"><span class="flabel">姓名</span><input class="finput" type="text" id="edit-name" value="'+c.name+'" oninput="liveUpdate(\'name\',this.value)" placeholder="姓名"/></div>'+
+    '<div class="frow"><span class="flabel">編號</span><input class="finput" type="text" id="edit-code" value="'+(c.code||'')+'" oninput="liveUpdate(\'code\',this.value)" placeholder="選填"/></div>'+
     '<div class="frow"><span class="flabel">生日</span><input class="finput" type="date" id="edit-bday" value="'+(c.birthday||'')+'" onchange="liveUpdate(\'birthday\',this.value)"/></div>'+
     '</div>'+
     '<div class="form-card"><div class="form-card-title">標籤</div>'+
@@ -439,13 +445,19 @@ function saveClient(){
   const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
   c.name=document.getElementById('edit-name').value;
   c.birthday=document.getElementById('edit-bday').value;
+  const codeEl=document.getElementById('edit-code');if(codeEl)c.code=codeEl.value;
   scheduleSync();showToast('儲存中…','ok');
 }
 function deleteClient(){
   const c=clients.find(function(x){return x.id===currentId;});
-  if(!confirm('確定要刪除「'+(c?c.name:'')+'」嗎？'))return;
+  if(!c)return;
+  const first=confirm('⚠️ 確定要刪除「'+c.name+'」嗎？\n\n刪除後資料將無法復原！');
+  if(!first)return;
+  const second=confirm('再次確認：真的要永久刪除「'+c.name+'」的所有資料嗎？');
+  if(!second)return;
   clients=clients.filter(function(x){return x.id!==currentId;});
   closeDetail();scheduleSync();
+  showToast('已刪除 '+c.name,'ok');
 }
 
 // ── New client ──
