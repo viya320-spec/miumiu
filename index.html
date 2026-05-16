@@ -8,138 +8,138 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
-  --mint:#34c79a;--mint-light:#f0faf6;--mint-mid:#a8e6d0;--mint-dark:#1a9e75;
-  --bg:#f2f2f7;--card:#ffffff;
-  --text1:#1c1c1e;--text2:#6c6c70;--text3:#aeaeb2;
-  --border:#e5e5ea;--sep:#d1d1d6;
-  --red:#ff3b30;--blue:#007aff;
-  --r-sm:10px;--r-md:13px;--r-lg:16px;--r-xl:20px;
+  --g1:#a8edcc;--g2:#7ec8e3;--g3:#c3b1e1;--g4:#f9c0c0;
+  --mint:#34c79a;--mint-d:#1a9e75;
+  --lavender:#b39ddb;--lavender-l:#ede7f6;
+  --pink:#f48fb1;--pink-l:#fce4ec;
+  --bg:#f4f6fb;--card:#ffffff;
+  --text1:#2d2d3a;--text2:#6b6b80;--text3:#b0b0c0;
+  --sep:rgba(0,0,0,.07);
+  --r:16px;--r-lg:22px;--r-xl:28px;
+  --shadow:0 4px 20px rgba(100,100,160,.10);
+  --shadow-sm:0 2px 10px rgba(100,100,160,.08);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text1);font-size:16px;line-height:1.5;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text1);font-size:15px;line-height:1.5;min-height:100vh;}
 
 /* ── Login ── */
-.login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;gap:20px;background:#fff;}
-.login-icon{width:72px;height:72px;border-radius:22px;background:var(--mint-light);display:flex;align-items:center;justify-content:center;font-size:36px;}
-.login-title{font-size:22px;font-weight:700;color:var(--text1);}
-.login-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.6;}
-.btn-google{display:flex;align-items:center;gap:10px;padding:14px 20px;font-size:16px;font-weight:600;border:1px solid var(--border);border-radius:var(--r-lg);background:#fff;color:var(--text1);cursor:pointer;width:100%;justify-content:center;}
-.btn-google svg{width:20px;height:20px;flex-shrink:0;}
+.login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 28px;gap:22px;background:linear-gradient(145deg,#e8f8f1 0%,#e8eeff 50%,#f5e8f8 100%);}
+.login-blob{width:90px;height:90px;border-radius:30px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 8px 30px rgba(52,199,154,.25);}
+.login-title{font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--mint-d),var(--lavender));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.login-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.7;}
+.btn-google{display:flex;align-items:center;gap:12px;padding:16px 24px;font-size:16px;font-weight:600;border:none;border-radius:var(--r-lg);background:#fff;color:var(--text1);cursor:pointer;width:100%;justify-content:center;box-shadow:var(--shadow);}
+.btn-google svg{width:22px;height:22px;flex-shrink:0;}
 
-/* ── App ── */
-.app{background:var(--bg);min-height:100vh;padding-bottom:80px;}
+/* ── App shell ── */
+.app{min-height:100vh;padding-bottom:90px;}
 
-/* ── Nav bar ── */
-.navbar{background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--sep);padding:12px 16px 10px;position:sticky;top:0;z-index:10;}
-.navbar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.nav-title{font-size:17px;font-weight:700;color:var(--text1);}
-.nav-right{display:flex;align-items:center;gap:8px;}
-.btn-icon{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--mint-light);border:none;cursor:pointer;color:var(--mint-dark);font-size:18px;}
-.btn-new-nav{display:flex;align-items:center;gap:4px;padding:7px 14px;font-size:14px;font-weight:600;border:none;border-radius:20px;background:var(--mint);color:#fff;cursor:pointer;}
-.search-wrap{position:relative;}
-.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text3);}
-.search-wrap input{width:100%;padding:9px 10px 9px 32px;font-size:15px;border:none;border-radius:var(--r-md);background:var(--bg);color:var(--text1);}
-.search-wrap input:focus{outline:none;}
+/* ── Header ── */
+.header{padding:16px 20px 14px;background:linear-gradient(135deg,#d4f5e9 0%,#dde8ff 100%);position:sticky;top:0;z-index:10;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.header-title{font-size:20px;font-weight:800;color:var(--text1);}
+.header-sub{font-size:12px;color:var(--text2);margin-top:1px;}
+.btn-new{display:flex;align-items:center;gap:5px;padding:10px 18px;font-size:14px;font-weight:700;border:none;border-radius:30px;background:linear-gradient(135deg,var(--mint),var(--g2));color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(52,199,154,.3);}
+.search-bar{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:var(--shadow-sm);}
+.search-bar i{font-size:17px;color:var(--text3);}
+.search-bar input{flex:1;border:none;background:transparent;font-size:15px;color:var(--text1);outline:none;}
+.search-bar input::placeholder{color:var(--text3);}
 
-/* ── Status bar ── */
-.statusbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:var(--mint-light);}
-.status-user{font-size:12px;color:var(--mint-dark);font-weight:500;display:flex;align-items:center;gap:4px;overflow:hidden;}
-.status-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
-.status-right{display:flex;align-items:center;gap:8px;}
-.sync-badge{font-size:12px;color:var(--mint-dark);display:flex;align-items:center;gap:3px;font-weight:500;}
-.sync-badge.syncing{color:#ff9500;}
-.sync-badge.err{color:var(--red);}
-.btn-logout-sm{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;padding:2px 6px;}
+/* ── Status ── */
+.statusbar{display:flex;align-items:center;justify-content:space-between;padding:7px 20px;background:rgba(255,255,255,.7);}
+.s-user{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px;overflow:hidden;}
+.s-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;}
+.s-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.sync-dot{font-size:12px;color:var(--mint-d);font-weight:500;display:flex;align-items:center;gap:3px;}
+.sync-dot.syncing{color:#ff9500;}
+.sync-dot.err{color:#ff3b30;}
+.btn-out{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:8px;background:rgba(0,0,0,.05);}
 
-/* ── Filter chips ── */
-.chips{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;background:#fff;border-bottom:0.5px solid var(--sep);}
+/* ── Chips ── */
+.chips{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;background:transparent;}
 .chips::-webkit-scrollbar{display:none;}
-.chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.chip.active{background:var(--mint);color:#fff;border-color:var(--mint);font-weight:600;}
+.chip{padding:7px 16px;border-radius:30px;font-size:13px;font-weight:600;border:none;background:#fff;color:var(--text2);cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-sm);flex-shrink:0;}
+.chip.active{color:#fff;box-shadow:0 4px 14px rgba(52,199,154,.3);}
 
-/* ── Client list ── */
-.list{padding:0 16px;margin-top:12px;display:flex;flex-direction:column;gap:1px;}
-.section-header{font-size:13px;font-weight:600;color:var(--text2);padding:8px 4px 4px;letter-spacing:.3px;}
-.client-card{background:#fff;border-radius:var(--r-lg);margin-bottom:8px;overflow:hidden;cursor:pointer;}
-.client-card:active{opacity:.7;}
-.card-inner{display:flex;align-items:center;gap:12px;padding:13px 14px;}
-.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;background:var(--mint-light);color:var(--mint-dark);}
-.card-content{flex:1;min-width:0;}
-.card-name{font-size:16px;font-weight:600;color:var(--text1);margin-bottom:2px;}
-.card-meta{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.card-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
-.card-arrow{color:var(--text3);font-size:16px;flex-shrink:0;}
-.card-record{font-size:12px;color:var(--text3);padding:0 14px 10px 70px;margin-top:-4px;}
+/* ── List ── */
+.list{padding:4px 16px 0;display:flex;flex-direction:column;gap:10px;}
+.client-card{background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:transform .12s;}
+.client-card:active{transform:scale(.97);}
+.card-accent{height:4px;width:100%;}
+.card-body{display:flex;align-items:center;gap:12px;padding:14px 16px;}
+.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+.card-info{flex:1;min-width:0;}
+.card-name{font-size:16px;font-weight:700;color:var(--text1);margin-bottom:3px;}
+.card-bday{font-size:12px;color:var(--text2);margin-bottom:4px;}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.card-tag-pill{font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
+.card-chevron{color:var(--text3);font-size:16px;flex-shrink:0;}
+.card-last{font-size:12px;color:var(--text3);padding:0 16px 12px 74px;display:flex;align-items:center;gap:4px;}
 .empty{text-align:center;padding:60px 20px;color:var(--text3);}
-.empty i{font-size:48px;display:block;margin-bottom:12px;color:var(--mint-mid);}
-.empty-title{font-size:17px;font-weight:600;color:var(--text2);margin-bottom:6px;}
-.empty-sub{font-size:14px;}
+.empty i{font-size:52px;display:block;margin-bottom:14px;}
+.empty-t{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.empty-s{font-size:13px;}
 
 /* ── Panel ── */
-.panel{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:20;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding-bottom:80px;}
+.panel{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:20;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding-bottom:90px;}
 .panel.open{transform:translateX(0);}
-.panel-nav{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:0.5px solid var(--sep);position:sticky;top:0;z-index:5;}
-.btn-back-text{display:flex;align-items:center;gap:2px;font-size:16px;color:var(--mint);background:none;border:none;cursor:pointer;font-weight:400;padding:0;}
-.panel-nav-title{flex:1;text-align:center;font-size:17px;font-weight:600;color:var(--text1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.btn-done{font-size:16px;font-weight:600;color:var(--mint);background:none;border:none;cursor:pointer;padding:0;}
+.panel-header{padding:14px 20px;background:linear-gradient(135deg,#d4f5e9 0%,#dde8ff 100%);position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;}
+.btn-back{display:flex;align-items:center;gap:2px;font-size:15px;color:var(--mint-d);background:rgba(255,255,255,.6);border:none;border-radius:20px;padding:7px 14px;cursor:pointer;font-weight:600;backdrop-filter:blur(10px);}
+.panel-htitle{flex:1;text-align:center;font-size:17px;font-weight:700;color:var(--text1);}
+.btn-done{font-size:15px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--mint),var(--g2));border:none;border-radius:20px;padding:7px 16px;cursor:pointer;}
 
-/* ── Form groups ── */
-.form-section{background:#fff;border-radius:var(--r-xl);margin:12px 16px 0;overflow:hidden;}
-.form-section-title{font-size:13px;font-weight:600;color:var(--text2);padding:14px 16px 6px;letter-spacing:.3px;}
-.form-row{display:flex;align-items:center;padding:0 16px;border-bottom:0.5px solid var(--sep);min-height:48px;}
-.form-row:last-child{border-bottom:none;}
-.form-label{font-size:15px;color:var(--text1);width:80px;flex-shrink:0;font-weight:500;}
-.form-input{flex:1;padding:12px 0;font-size:15px;border:none;background:transparent;color:var(--text1);outline:none;text-align:right;}
-.form-input::placeholder{color:var(--text3);}
-.form-textarea{flex:1;padding:12px 0;font-size:15px;border:none;background:transparent;color:var(--text1);outline:none;resize:none;line-height:1.5;text-align:right;}
-.form-textarea::placeholder{color:var(--text3);}
+/* ── Form cards ── */
+.form-card{background:#fff;border-radius:var(--r-lg);margin:14px 16px 0;box-shadow:var(--shadow-sm);overflow:hidden;}
+.form-card-title{font-size:12px;font-weight:700;color:var(--text3);padding:14px 16px 6px;letter-spacing:.5px;text-transform:uppercase;}
+.frow{display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--sep);min-height:50px;}
+.frow:last-child{border-bottom:none;}
+.flabel{font-size:15px;font-weight:600;color:var(--text1);width:72px;flex-shrink:0;}
+.finput{flex:1;padding:13px 0;font-size:15px;border:none;background:transparent;color:var(--text1);outline:none;text-align:right;}
+.finput::placeholder{color:var(--text3);}
 
-/* ── Tags section ── */
-.tags-wrap{padding:10px 16px 14px;display:flex;flex-wrap:wrap;gap:8px;}
-.tag-chip{padding:6px 14px;border-radius:20px;font-size:14px;font-weight:500;border:1.5px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;}
-.tag-chip.selected{font-weight:600;}
-.tag-chip .tag-del{font-size:14px;color:var(--text3);margin-left:2px;}
-.btn-add-tag{padding:6px 14px;border-radius:20px;font-size:14px;border:1.5px dashed var(--sep);background:#fff;color:var(--mint);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:500;}
+/* ── Tags ── */
+.tags-area{padding:12px 16px 16px;display:flex;flex-wrap:wrap;gap:8px;}
+.tag-pill{padding:7px 16px;border-radius:30px;font-size:14px;font-weight:600;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:6px;background:#f4f6fb;color:var(--text2);}
+.tag-pill.on{color:#fff;}
+.tag-pill .tdel{font-size:14px;opacity:.6;}
+.btn-newtag{padding:7px 16px;border-radius:30px;font-size:14px;font-weight:600;border:2px dashed var(--text3);background:transparent;color:var(--mint-d);cursor:pointer;display:flex;align-items:center;gap:5px;}
 
 /* ── Records ── */
-.records-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px;}
-.records-title{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px;}
-.btn-add-rec{font-size:14px;font-weight:600;color:var(--mint);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;}
-.record-card{background:#fff;border-radius:var(--r-lg);margin:0 16px 10px;overflow:hidden;}
-.rec-date-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:0.5px solid var(--sep);}
-.rec-date-input{font-size:15px;border:none;background:transparent;color:var(--mint-dark);font-weight:600;outline:none;}
-.rec-del-btn{background:none;border:none;color:var(--red);font-size:20px;cursor:pointer;padding:0;}
-.rec-field{padding:0 14px;border-bottom:0.5px solid var(--sep);}
+.rec-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;}
+.rec-hdr-t{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;}
+.btn-addrec{display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--mint-d);background:rgba(52,199,154,.12);border:none;border-radius:20px;padding:6px 14px;cursor:pointer;}
+.rec-card{background:#fff;border-radius:var(--r-lg);margin:0 16px 10px;box-shadow:var(--shadow-sm);overflow:hidden;}
+.rec-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(135deg,rgba(212,245,233,.6),rgba(221,232,255,.6));border-bottom:1px solid var(--sep);}
+.rec-date{font-size:15px;font-weight:700;color:var(--mint-d);border:none;background:transparent;outline:none;}
+.btn-recdel{background:none;border:none;color:#ff3b30;font-size:20px;cursor:pointer;}
+.rec-field{padding:0 14px;border-bottom:1px solid var(--sep);}
 .rec-field:last-child{border-bottom:none;}
-.rec-field-label{font-size:12px;font-weight:600;color:var(--text3);padding-top:10px;letter-spacing:.3px;}
+.rec-flabel{font-size:11px;font-weight:700;color:var(--text3);padding-top:10px;letter-spacing:.4px;text-transform:uppercase;}
 .rec-field input,.rec-field textarea{width:100%;font-size:15px;border:none;background:transparent;color:var(--text1);outline:none;padding:6px 0 10px;resize:none;line-height:1.5;}
 .rec-field input::placeholder,.rec-field textarea::placeholder{color:var(--text3);}
-.no-rec{text-align:center;padding:20px;color:var(--text3);font-size:14px;}
+.no-rec{text-align:center;padding:24px;color:var(--text3);font-size:14px;}
 
-/* ── Delete btn ── */
-.btn-delete{margin:16px 16px 0;width:calc(100% - 32px);padding:14px;font-size:16px;font-weight:600;color:var(--red);background:#fff;border:none;border-radius:var(--r-lg);cursor:pointer;}
+/* ── Delete ── */
+.btn-del-client{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 16px 0;width:calc(100%-32px);padding:15px;font-size:16px;font-weight:600;color:#ff3b30;background:#fff;border:none;border-radius:var(--r-lg);cursor:pointer;box-shadow:var(--shadow-sm);width:calc(100% - 32px);}
 
-/* ── Modal ── */
-.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:40;display:none;align-items:flex-end;}
+/* ── Modals ── */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:40;display:none;align-items:flex-end;}
 .modal-bg.open{display:flex;}
-.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 44px;width:100%;display:flex;flex-direction:column;gap:14px;}
-.modal-title{font-size:17px;font-weight:700;color:var(--text1);}
-.modal-input{padding:13px 14px;font-size:16px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg);color:var(--text1);width:100%;outline:none;}
-.modal-input:focus{border-color:var(--mint);}
-.modal-actions{display:flex;gap:10px;}
-.btn-modal-cancel{flex:1;padding:14px;font-size:16px;border:1px solid var(--border);border-radius:var(--r-lg);background:#fff;color:var(--text2);cursor:pointer;font-weight:500;}
-.btn-modal-ok{flex:1;padding:14px;font-size:16px;font-weight:600;border:none;border-radius:var(--r-lg);background:var(--mint);color:#fff;cursor:pointer;}
-
-/* ── Tag add modal ── */
-.color-picker{display:flex;gap:10px;flex-wrap:wrap;}
-.color-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;}
-.color-dot.chosen{border-color:var(--text1);}
+.modal{background:#fff;border-radius:var(--r-xl) var(--r-xl) 0 0;padding:24px 20px 48px;width:100%;display:flex;flex-direction:column;gap:16px;}
+.modal-handle{width:36px;height:4px;background:var(--text3);border-radius:4px;margin:0 auto 4px;}
+.modal-title{font-size:18px;font-weight:800;color:var(--text1);}
+.minput{padding:14px 16px;font-size:16px;border:1.5px solid #eee;border-radius:var(--r);background:#f9f9f9;color:var(--text1);width:100%;outline:none;}
+.minput:focus{border-color:var(--mint);}
+.mactions{display:flex;gap:10px;}
+.btn-mcancel{flex:1;padding:14px;font-size:16px;border:1.5px solid #eee;border-radius:var(--r-lg);background:#fff;color:var(--text2);cursor:pointer;font-weight:600;}
+.btn-mok{flex:1;padding:14px;font-size:16px;font-weight:700;border:none;border-radius:var(--r-lg);background:linear-gradient(135deg,var(--mint),var(--g2));color:#fff;cursor:pointer;}
+.color-row{display:flex;gap:10px;flex-wrap:wrap;}
+.cdot{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .1s;}
+.cdot.on{border-color:var(--text1);transform:scale(1.15);}
 
 /* ── Toast ── */
-.toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(0,0,0,.8);color:#fff;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:500;z-index:60;transition:transform .28s;pointer-events:none;white-space:nowrap;}
+.toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(30,30,40,.85);color:#fff;padding:11px 22px;border-radius:30px;font-size:14px;font-weight:600;z-index:60;transition:transform .28s;pointer-events:none;white-space:nowrap;backdrop-filter:blur(10px);}
 .toast.show{transform:translateX(-50%) translateY(0);}
-.toast.ok{background:var(--mint-dark);}
-.toast.err{background:var(--red);}
-
+.toast.ok{background:rgba(26,158,117,.9);}
+.toast.err{background:rgba(255,59,48,.9);}
 .spinning{display:inline-block;animation:spin .8s linear infinite;}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 </style>
@@ -150,70 +150,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 
 <!-- Login -->
 <div id="loginScreen" class="login">
-  <div class="login-icon">🌿</div>
-  <div class="login-title">Miu 客戶關懷</div>
-  <div class="login-sub">登入 Google 帳號<br>資料自動同步至您的 Google Sheets</div>
+  <div class="login-blob">🌿</div>
+  <div>
+    <div class="login-title">Miu 客戶關懷</div>
+    <div style="font-size:13px;color:var(--text2);text-align:center;margin-top:6px;">您的專屬診所客戶管理系統</div>
+  </div>
+  <div class="login-sub">登入 Google 帳號，資料自動同步<br>安全儲存於您的 Google Sheets</div>
   <button class="btn-google" onclick="signIn()">
     <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
     使用 Google 帳號登入
   </button>
 </div>
 
-<!-- Main -->
+<!-- Main App -->
 <div id="mainApp" style="display:none;">
   <div class="app">
-    <div class="navbar">
-      <div class="navbar-row">
-        <div class="nav-title">Miu 客戶關懷</div>
-        <div class="nav-right">
-          <button class="btn-new-nav" onclick="openNewModal()"><i class="ti ti-plus"></i> 新增</button>
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="header-title">🌿 Miu 客戶關懷</div>
+          <div class="header-sub" id="clientCount">共 0 位客戶</div>
         </div>
+        <button class="btn-new" onclick="openNewModal()"><i class="ti ti-user-plus"></i> 新增客戶</button>
       </div>
-      <div class="search-wrap">
+      <div class="search-bar">
         <i class="ti ti-search"></i>
         <input type="text" id="searchInput" placeholder="搜尋客戶姓名…" oninput="renderList()"/>
       </div>
     </div>
     <div class="statusbar">
-      <div class="status-user"><i class="ti ti-user-circle" style="font-size:14px;flex-shrink:0"></i><span class="status-email" id="userEmail"></span></div>
-      <div class="status-right">
-        <span class="sync-badge" id="syncBadge"><i class="ti ti-cloud-check"></i> 已同步</span>
-        <button class="btn-logout-sm" onclick="signOut()">登出</button>
+      <div class="s-user"><i class="ti ti-user-circle" style="font-size:14px;flex-shrink:0"></i><span class="s-email" id="userEmail"></span></div>
+      <div class="s-right">
+        <span class="sync-dot" id="syncDot"><i class="ti ti-cloud-check"></i> 已同步</span>
+        <button class="btn-out" onclick="signOut()">登出</button>
       </div>
     </div>
-    <div class="chips" id="chipsRow">
-      <button class="chip active" id="chip-all" onclick="setFilter('')">全部</button>
-    </div>
+    <div class="chips" id="chipsRow"></div>
     <div class="list" id="clientList"></div>
   </div>
 </div>
 
 <!-- Detail Panel -->
 <div class="panel" id="detailPanel">
-  <div class="panel-nav">
-    <button class="btn-back-text" onclick="closeDetail()"><i class="ti ti-chevron-left" style="font-size:20px"></i> 返回</button>
-    <span class="panel-nav-title" id="panelTitle"></span>
+  <div class="panel-header">
+    <button class="btn-back" onclick="closeDetail()"><i class="ti ti-chevron-left"></i> 返回</button>
+    <span class="panel-htitle" id="panelTitle"></span>
     <button class="btn-done" onclick="saveClient()">儲存</button>
   </div>
   <div id="panelBody"></div>
-  <button class="btn-delete" onclick="deleteClient()">刪除客戶</button>
+  <button class="btn-del-client" onclick="deleteClient()"><i class="ti ti-trash"></i> 刪除此客戶</button>
 </div>
 
 <!-- New Client Modal -->
 <div class="modal-bg" id="newModal">
   <div class="modal">
-    <div class="modal-title">新增客戶</div>
+    <div class="modal-handle"></div>
+    <div class="modal-title">新增客戶 🌸</div>
     <div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500;">姓名 *</div>
-      <input class="modal-input" type="text" id="newName" placeholder="請輸入姓名"/>
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:7px;">姓名 *</div>
+      <input class="minput" type="text" id="newName" placeholder="請輸入姓名"/>
     </div>
     <div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500;">生日</div>
-      <input class="modal-input" type="date" id="newBday"/>
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:7px;">生日</div>
+      <input class="minput" type="date" id="newBday"/>
     </div>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeNewModal()">取消</button>
-      <button class="btn-modal-ok" onclick="createClient()">新增</button>
+    <div class="mactions">
+      <button class="btn-mcancel" onclick="closeNewModal()">取消</button>
+      <button class="btn-mok" onclick="createClient()">新增</button>
     </div>
   </div>
 </div>
@@ -221,18 +224,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 <!-- Add Tag Modal -->
 <div class="modal-bg" id="tagModal">
   <div class="modal">
-    <div class="modal-title">新增標籤</div>
+    <div class="modal-handle"></div>
+    <div class="modal-title">新增標籤 🏷️</div>
     <div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500;">標籤名稱</div>
-      <input class="modal-input" type="text" id="tagName" placeholder="例：敏感肌、VIP…" maxlength="8"/>
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:7px;">標籤名稱（最多6字）</div>
+      <input class="minput" type="text" id="tagName" placeholder="例：VIP、敏感肌、電話客…" maxlength="6"/>
     </div>
     <div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:500;">顏色</div>
-      <div class="color-picker" id="colorPicker"></div>
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;">選擇顏色</div>
+      <div class="color-row" id="colorRow"></div>
     </div>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeTagModal()">取消</button>
-      <button class="btn-modal-ok" onclick="confirmAddTag()">新增</button>
+    <div class="mactions">
+      <button class="btn-mcancel" onclick="closeTagModal()">取消</button>
+      <button class="btn-mok" onclick="confirmAddTag()">新增</button>
     </div>
   </div>
 </div>
@@ -243,38 +247,32 @@ const CLIENT_ID='543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleuserco
 const SHEET_ID='184tkzxwG2jTnf3amFlEtpdjul_LFWreMLIIfBDK1U0E';
 const SHEET_TITLE='Miu客戶關懷';
 const TAG_SHEET='標籤設定';
+const TAG_COLORS=['#34c79a','#7ec8e3','#b39ddb','#f48fb1','#ff9500','#ff3b30','#007aff','#5ac8fa','#4cd964','#ffcc00'];
+const GRAD_MAP={'#34c79a':'135deg,#34c79a,#7ec8e3','#7ec8e3':'135deg,#7ec8e3,#b39ddb','#b39ddb':'135deg,#b39ddb,#f48fb1','#f48fb1':'135deg,#f48fb1,#ffb3c6','#ff9500':'135deg,#ff9500,#ffcc00','#ff3b30':'135deg,#ff3b30,#f48fb1','#007aff':'135deg,#007aff,#5ac8fa','#5ac8fa':'135deg,#5ac8fa,#7ec8e3','#4cd964':'135deg,#4cd964,#34c79a','#ffcc00':'135deg,#ffcc00,#ff9500'};
 
-// Default tags
-const DEFAULT_TAGS=[
-  {id:'old',name:'舊客',color:'#34c79a'},
-  {id:'lost',name:'未成交',color:'#ff9500'},
-  {id:'phone',name:'電話客',color:'#007aff'},
-];
+const DEFAULT_TAGS=[{id:'old',name:'舊客',color:'#34c79a'},{id:'lost',name:'未成交',color:'#ff9500'},{id:'phone',name:'電話客',color:'#007aff'}];
 
-const TAG_COLORS=['#34c79a','#007aff','#ff3b30','#ff9500','#af52de','#ff2d55','#5ac8fa','#4cd964'];
-
-let clients=[], customTags=[...DEFAULT_TAGS];
+let clients=[], tags=[...DEFAULT_TAGS];
 let currentFilter='', currentId=null, accessToken=null;
-let syncTimer=null, isSyncing=false;
-let newTagColor=TAG_COLORS[0];
+let syncTimer=null, isSyncing=false, newTagColor=TAG_COLORS[0];
 
-// ── Helpers ──────────────────────────────
 function showToast(msg,type,dur){
   dur=dur||2000;
   const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast '+(type||''); t.classList.add('show');
+  t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},dur);
 }
-function setSyncBadge(state){
-  const el=document.getElementById('syncBadge'); if(!el)return;
-  if(state==='syncing'){el.className='sync-badge syncing';el.innerHTML='<span class="spinning"><i class="ti ti-loader" style="font-size:13px"></i></span> 同步中';}
-  else if(state==='ok'){el.className='sync-badge';el.innerHTML='<i class="ti ti-cloud-check"></i> 已同步';}
-  else{el.className='sync-badge err';el.innerHTML='<i class="ti ti-cloud-off"></i> 失敗';}
+function setSyncDot(s){
+  const el=document.getElementById('syncDot');if(!el)return;
+  if(s==='syncing'){el.className='sync-dot syncing';el.innerHTML='<span class="spinning"><i class="ti ti-loader" style="font-size:12px"></i></span> 同步中';}
+  else if(s==='ok'){el.className='sync-dot';el.innerHTML='<i class="ti ti-cloud-check"></i> 已同步';}
+  else{el.className='sync-dot err';el.innerHTML='<i class="ti ti-cloud-off"></i> 失敗';}
 }
-function tagById(id){ return customTags.find(function(t){return t.id===id;})||{name:id,color:'#aaa'}; }
-function scheduleSync(){ clearTimeout(syncTimer); syncTimer=setTimeout(function(){syncAll(true);},1500); }
+function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(function(){syncAll(true);},1500);}
+function tagById(id){return tags.find(function(t){return t.id===id;})||{name:id,color:'#aaa'};}
+function grad(color){return GRAD_MAP[color]||'135deg,'+color+','+color;}
 
-// ── Auth ─────────────────────────────────
+// ── Auth ──
 function signIn(){
   google.accounts.oauth2.initTokenClient({
     client_id:CLIENT_ID,
@@ -288,8 +286,7 @@ function signIn(){
       document.getElementById('mainApp').style.display='block';
       await loadTags();
       await loadClients();
-      renderChips();
-      renderList();
+      renderChips();renderList();
     }
   }).requestAccessToken();
 }
@@ -300,78 +297,57 @@ function signOut(){
   document.getElementById('mainApp').style.display='none';
 }
 
-// ── Sheets ───────────────────────────────
+// ── Sheets ──
 async function sheetsReq(path,method,body){
   method=method||'GET';
   const opts={method:method,headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'}};
   if(body)opts.body=JSON.stringify(body);
   return fetch('https://sheets.googleapis.com/v4/spreadsheets'+path,opts).then(function(r){return r.json();});
 }
-
 async function loadClients(){
-  setSyncBadge('syncing');
+  setSyncDot('syncing');
   try{
     const res=await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(SHEET_TITLE+'!A2:F'));
     const rows=res.values||[];
-    clients=rows.map(function(r){return{
-      id:r[0]||'',name:r[1]||'',birthday:r[2]||'',
-      tags:r[3]?r[3].split(',').filter(Boolean):[],
-      records:r[4]?(function(){try{return JSON.parse(r[4]);}catch(e){return[];}})():[],
-      createdAt:r[5]||''
-    };}).filter(function(c){return c.id;});
-    setSyncBadge('ok');
-  }catch(e){setSyncBadge('err');}
+    clients=rows.map(function(r){return{id:r[0]||'',name:r[1]||'',birthday:r[2]||'',tags:r[3]?r[3].split(',').filter(Boolean):[],records:r[4]?(function(){try{return JSON.parse(r[4]);}catch(e){return[];}})():[],createdAt:r[5]||''};}).filter(function(c){return c.id;});
+    setSyncDot('ok');
+  }catch(e){setSyncDot('err');}
 }
-
 async function loadTags(){
   try{
     const res=await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(TAG_SHEET+'!A2:C'));
     const rows=res.values||[];
-    if(rows.length){
-      customTags=rows.map(function(r){return{id:r[0]||'',name:r[1]||'',color:r[2]||'#34c79a'};}).filter(function(t){return t.id;});
-    }
+    if(rows.length){tags=rows.map(function(r){return{id:r[0]||'',name:r[1]||'',color:r[2]||'#34c79a'};}).filter(function(t){return t.id;});}
   }catch(e){}
 }
-
 async function syncAll(silent){
   if(!accessToken||isSyncing)return;
-  isSyncing=true; setSyncBadge('syncing');
+  isSyncing=true;setSyncDot('syncing');
   try{
-    // Sync clients
-    const cvals=[['ID','姓名','生日','標籤','紀錄JSON','建立時間']].concat(
-      clients.map(function(c){return[c.id,c.name,c.birthday||'',c.tags.join(','),JSON.stringify(c.records||[]),c.createdAt||''];})
-    );
-    await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{values:cvals});
-    // Sync tags
-    const tvals=[['ID','名稱','顏色']].concat(customTags.map(function(t){return[t.id,t.name,t.color];}));
-    await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(TAG_SHEET+'!A1')+'?valueInputOption=RAW','PUT',{values:tvals});
-    setSyncBadge('ok');
+    const cv=[['ID','姓名','生日','標籤','紀錄JSON','建立時間']].concat(clients.map(function(c){return[c.id,c.name,c.birthday||'',c.tags.join(','),JSON.stringify(c.records||[]),c.createdAt||''];}));
+    await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(SHEET_TITLE+'!A1')+'?valueInputOption=RAW','PUT',{values:cv});
+    const tv=[['ID','名稱','顏色']].concat(tags.map(function(t){return[t.id,t.name,t.color];}));
+    await sheetsReq('/'+SHEET_ID+'/values/'+encodeURIComponent(TAG_SHEET+'!A1')+'?valueInputOption=RAW','PUT',{values:tv});
+    setSyncDot('ok');
     if(!silent)showToast('已同步','ok');
-  }catch(e){setSyncBadge('err');showToast('同步失敗','err');}
+  }catch(e){setSyncDot('err');showToast('同步失敗','err');}
   isSyncing=false;
 }
 
-// ── Render chips ──────────────────────────
+// ── Chips ──
 function renderChips(){
   const row=document.getElementById('chipsRow');
-  row.innerHTML='<button class="chip'+(currentFilter===''?' active':'')+'" onclick="setFilter(\'\')">全部</button>';
-  customTags.forEach(function(t){
-    const btn=document.createElement('button');
-    btn.className='chip'+(currentFilter===t.id?' active':'');
-    btn.textContent=t.name;
-    if(currentFilter===t.id){btn.style.background=t.color;btn.style.borderColor=t.color;}
-    btn.onclick=function(){setFilter(t.id);};
-    row.appendChild(btn);
+  let html='<button class="chip'+(currentFilter===''?' active':'')+'" style="'+(currentFilter===''?'background:linear-gradient(135deg,var(--mint),var(--g2));':'')+'" onclick="setFilter(\'\')">全部</button>';
+  tags.forEach(function(t){
+    const on=currentFilter===t.id;
+    html+='<button class="chip'+(on?' active':'')+'" style="'+(on?'background:linear-gradient('+grad(t.color)+');':'')+'" onclick="setFilter(\''+t.id+'\')">'+t.name+'</button>';
   });
+  row.innerHTML=html;
 }
+function setFilter(f){currentFilter=f;renderChips();renderList();}
 
-function setFilter(f){
-  currentFilter=f; renderChips(); renderList();
-}
-
-// ── Render list ───────────────────────────
+// ── List ──
 function initials(n){return n?n.slice(0,2):'??';}
-
 function renderList(){
   const q=document.getElementById('searchInput').value.trim();
   const list=clients.filter(function(c){
@@ -379,173 +355,126 @@ function renderList(){
     if(currentFilter&&!c.tags.includes(currentFilter))return false;
     return true;
   });
+  document.getElementById('clientCount').textContent='共 '+clients.length+' 位客戶';
   const el=document.getElementById('clientList');
   if(!list.length){
-    el.innerHTML='<div class="empty"><i class="ti ti-users"></i><div class="empty-title">尚無客戶</div><div class="empty-sub">點右上角新增第一位客戶</div></div>';
+    el.innerHTML='<div class="empty"><i class="ti ti-heart-off" style="color:var(--mint-light)"></i><div class="empty-t">尚無客戶資料</div><div class="empty-s">點右上角「新增客戶」開始使用</div></div>';
     return;
   }
   el.innerHTML=list.map(function(c){
     const sorted=(c.records||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);});
     const last=sorted[0]||null;
-    const tagHtml=c.tags.map(function(tid){
-      const t=tagById(tid);
-      return '<span class="card-tag" style="background:'+t.color+'22;color:'+t.color+';">'+t.name+'</span>';
-    }).join('');
+    const ft=c.tags[0]?tagById(c.tags[0]):null;
+    const accentGrad=ft?grad(ft.color):'135deg,#a8edcc,#7ec8e3';
+    const avatarBg=ft?'linear-gradient('+grad(ft.color)+')':'linear-gradient(135deg,#a8edcc,#7ec8e3)';
+    const tpills=c.tags.map(function(tid){const t=tagById(tid);return'<span class="card-tag-pill" style="background:'+t.color+'20;color:'+t.color+';">'+t.name+'</span>';}).join('');
     return '<div class="client-card" onclick="openDetail(\''+c.id+'\')">'+
-      '<div class="card-inner">'+
-      '<div class="avatar" style="background:'+( c.tags[0]?tagById(c.tags[0]).color+'22':'var(--mint-light)')+'color:'+( c.tags[0]?tagById(c.tags[0]).color:'var(--mint-dark)')+'">'+initials(c.name)+'</div>'+
-      '<div class="card-content">'+
+      '<div class="card-accent" style="background:linear-gradient('+accentGrad+')"></div>'+
+      '<div class="card-body">'+
+      '<div class="avatar" style="background:'+avatarBg+';color:#fff;">'+initials(c.name)+'</div>'+
+      '<div class="card-info">'+
       '<div class="card-name">'+c.name+'</div>'+
-      '<div class="card-meta">'+
-      (c.birthday?'<span>'+c.birthday+'</span>':'')+
-      tagHtml+
-      '</div></div>'+
-      '<i class="ti ti-chevron-right card-arrow"></i>'+
-      '</div>'+
-      (last?'<div class="card-record"><i class="ti ti-calendar-event" style="font-size:12px;vertical-align:-1px"></i> '+last.date+(last.procedure?'・'+last.procedure:'')+'</div>':'')+
+      (c.birthday?'<div class="card-bday"><i class="ti ti-cake" style="font-size:11px;vertical-align:-1px"></i> '+c.birthday+'</div>':'')+
+      (tpills?'<div class="card-tags">'+tpills+'</div>':'')+
+      '</div><i class="ti ti-chevron-right card-chevron"></i></div>'+
+      (last?'<div class="card-last"><i class="ti ti-calendar-event" style="font-size:12px"></i>'+last.date+(last.procedure?'・'+last.procedure:'')+'</div>':'')+
       '</div>';
   }).join('');
 }
 
-// ── Detail ────────────────────────────────
+// ── Detail ──
 function openDetail(id){
   currentId=id;
   const c=clients.find(function(x){return x.id===id;});
   document.getElementById('panelTitle').textContent=c.name;
   renderDetail(c);
   document.getElementById('detailPanel').classList.add('open');
-  window.scrollTo(0,0);
 }
 function closeDetail(){
   document.getElementById('detailPanel').classList.remove('open');
-  currentId=null; renderList();
+  currentId=null;renderList();
 }
-
 function renderDetail(c){
   const sorted=(c.records||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);});
-
-  const tagChips=customTags.map(function(t){
+  const tagChips=tags.map(function(t){
     const on=c.tags.includes(t.id);
-    return '<button class="tag-chip'+(on?' selected':'')+'" style="'+(on?'background:'+t.color+'22;border-color:'+t.color+';color:'+t.color+';':'')+'" onclick="toggleTag(\''+t.id+'\',this,\''+t.color+'\')">'+t.name+'</button>';
+    return '<button class="tag-pill'+(on?' on':'')+'" style="'+(on?'background:linear-gradient('+grad(t.color)+');border-color:transparent;':'')+'" onclick="toggleTag(\''+t.id+'\',this,\''+t.color+'\')">'+t.name+'</button>';
   }).join('');
-
   const recsHtml=sorted.map(function(r){
-    return '<div class="record-card">'+
-      '<div class="rec-date-row">'+
-      '<input type="date" class="rec-date-input" value="'+r.date+'" onchange="updateRec(\''+r.id+'\',\'date\',this.value)"/>'+
-      '<button class="rec-del-btn" onclick="deleteRec(\''+r.id+'\')"><i class="ti ti-x"></i></button>'+
+    return '<div class="rec-card">'+
+      '<div class="rec-top">'+
+      '<input type="date" class="rec-date" value="'+r.date+'" onchange="updateRec(\''+r.id+'\',\'date\',this.value)"/>'+
+      '<button class="btn-recdel" onclick="deleteRec(\''+r.id+'\')"><i class="ti ti-x"></i></button>'+
       '</div>'+
-      '<div class="rec-field"><div class="rec-field-label">療程項目</div>'+
-      '<input type="text" value="'+(r.procedure||'')+'" placeholder="水光、電波、玻尿酸…" onchange="updateRec(\''+r.id+'\',\'procedure\',this.value)"/></div>'+
-      '<div class="rec-field"><div class="rec-field-label">小叮嚀</div>'+
-      '<textarea rows="2" placeholder="術前術後注意事項…" onchange="updateRec(\''+r.id+'\',\'reminder\',this.value)">'+(r.reminder||'')+'</textarea></div>'+
-      '<div class="rec-field"><div class="rec-field-label">小筆記</div>'+
-      '<textarea rows="2" placeholder="私人備註…" onchange="updateRec(\''+r.id+'\',\'note\',this.value)">'+(r.note||'')+'</textarea></div>'+
+      '<div class="rec-field"><div class="rec-flabel">療程項目</div><input type="text" value="'+(r.procedure||'')+'" placeholder="水光、電波、玻尿酸…" onchange="updateRec(\''+r.id+'\',\'procedure\',this.value)"/></div>'+
+      '<div class="rec-field"><div class="rec-flabel">小叮嚀</div><textarea rows="2" placeholder="術前術後注意事項…" onchange="updateRec(\''+r.id+'\',\'reminder\',this.value)">'+(r.reminder||'')+'</textarea></div>'+
+      '<div class="rec-field"><div class="rec-flabel">小筆記</div><textarea rows="2" placeholder="私人備註…" onchange="updateRec(\''+r.id+'\',\'note\',this.value)">'+(r.note||'')+'</textarea></div>'+
       '</div>';
   }).join('');
 
   document.getElementById('panelBody').innerHTML=
-    '<div class="form-section" style="margin-top:16px;">'+
-    '<div class="form-section-title">基本資料</div>'+
-    '<div class="form-row"><span class="form-label">姓名</span><input class="form-input" type="text" id="edit-name" value="'+c.name+'" oninput="liveUpdate(\'name\',this.value)" placeholder="請輸入姓名"/></div>'+
-    '<div class="form-row"><span class="form-label">生日</span><input class="form-input" type="date" id="edit-bday" value="'+(c.birthday||'')+'" onchange="liveUpdate(\'birthday\',this.value)"/></div>'+
+    '<div class="form-card"><div class="form-card-title">基本資料</div>'+
+    '<div class="frow"><span class="flabel">姓名</span><input class="finput" type="text" id="edit-name" value="'+c.name+'" oninput="liveUpdate(\'name\',this.value)" placeholder="姓名"/></div>'+
+    '<div class="frow"><span class="flabel">生日</span><input class="finput" type="date" id="edit-bday" value="'+(c.birthday||'')+'" onchange="liveUpdate(\'birthday\',this.value)"/></div>'+
     '</div>'+
-    '<div class="form-section" style="margin-top:12px;">'+
-    '<div class="form-section-title">標籤</div>'+
-    '<div class="tags-wrap" id="detailTags">'+tagChips+
-    '<button class="btn-add-tag" onclick="openTagModal()"><i class="ti ti-plus" style="font-size:13px"></i> 新增標籤</button>'+
+    '<div class="form-card"><div class="form-card-title">標籤</div>'+
+    '<div class="tags-area" id="detailTags">'+tagChips+
+    '<button class="btn-newtag" onclick="openTagModal()"><i class="ti ti-plus" style="font-size:13px"></i> 新增標籤</button>'+
     '</div></div>'+
-    '<div class="records-header"><span class="records-title">預約紀錄</span>'+
-    '<button class="btn-add-rec" onclick="addRecord()"><i class="ti ti-plus"></i> 新增</button></div>'+
-    (recsHtml||'<div class="no-rec">尚無紀錄，點「新增」開始記錄</div>');
+    '<div class="rec-hdr"><span class="rec-hdr-t">預約紀錄</span>'+
+    '<button class="btn-addrec" onclick="addRecord()"><i class="ti ti-plus"></i> 新增紀錄</button></div>'+
+    (recsHtml||'<div class="no-rec">尚無紀錄，點「新增紀錄」開始記錄</div>');
 }
 
-function liveUpdate(f,v){
-  const c=clients.find(function(x){return x.id===currentId;});
-  if(c){c[f]=v;if(f==='name')document.getElementById('panelTitle').textContent=v||'客戶資料';}
-}
+function liveUpdate(f,v){const c=clients.find(function(x){return x.id===currentId;});if(c){c[f]=v;if(f==='name')document.getElementById('panelTitle').textContent=v||'客戶資料';}}
 function toggleTag(k,btn,color){
   const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
-  if(c.tags.includes(k)){
-    c.tags=c.tags.filter(function(t){return t!==k;});
-    btn.classList.remove('selected');
-    btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
-  }else{
-    c.tags.push(k);
-    btn.classList.add('selected');
-    btn.style.background=color+'22'; btn.style.borderColor=color; btn.style.color=color;
-  }
+  if(c.tags.includes(k)){c.tags=c.tags.filter(function(t){return t!==k;});btn.classList.remove('on');btn.style.background='';btn.style.borderColor='';}
+  else{c.tags.push(k);btn.classList.add('on');btn.style.background='linear-gradient('+grad(color)+')';btn.style.borderColor='transparent';}
 }
-function addRecord(){
-  const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
-  const r={id:Date.now().toString(),date:new Date().toISOString().slice(0,10),procedure:'',reminder:'',note:''};
-  c.records=c.records||[];c.records.unshift(r);renderDetail(c);
-}
-function updateRec(rid,field,val){
-  const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
-  const r=c.records.find(function(r){return r.id===rid;});if(r)r[field]=val;
-}
-function deleteRec(rid){
-  const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
-  c.records=c.records.filter(function(r){return r.id!==rid;});renderDetail(c);
-}
+function addRecord(){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;const r={id:Date.now().toString(),date:new Date().toISOString().slice(0,10),procedure:'',reminder:'',note:''};c.records=c.records||[];c.records.unshift(r);renderDetail(c);}
+function updateRec(rid,f,v){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;const r=c.records.find(function(r){return r.id===rid;});if(r)r[f]=v;}
+function deleteRec(rid){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;c.records=c.records.filter(function(r){return r.id!==rid;});renderDetail(c);}
 function saveClient(){
   const c=clients.find(function(x){return x.id===currentId;});if(!c)return;
   c.name=document.getElementById('edit-name').value;
   c.birthday=document.getElementById('edit-bday').value;
-  scheduleSync(); showToast('儲存中…','ok');
+  scheduleSync();showToast('儲存中…','ok');
 }
 function deleteClient(){
   const c=clients.find(function(x){return x.id===currentId;});
   if(!confirm('確定要刪除「'+(c?c.name:'')+'」嗎？'))return;
   clients=clients.filter(function(x){return x.id!==currentId;});
-  closeDetail(); scheduleSync();
+  closeDetail();scheduleSync();
 }
 
-// ── New client ────────────────────────────
-function openNewModal(){
-  document.getElementById('newModal').classList.add('open');
-  document.getElementById('newName').value='';
-  document.getElementById('newBday').value='';
-  setTimeout(function(){document.getElementById('newName').focus();},150);
-}
+// ── New client ──
+function openNewModal(){document.getElementById('newModal').classList.add('open');document.getElementById('newName').value='';document.getElementById('newBday').value='';setTimeout(function(){document.getElementById('newName').focus();},150);}
 function closeNewModal(){document.getElementById('newModal').classList.remove('open');}
 function createClient(){
-  const name=document.getElementById('newName').value.trim();
-  if(!name){alert('請輸入姓名');return;}
+  const name=document.getElementById('newName').value.trim();if(!name){alert('請輸入姓名');return;}
   const c={id:Date.now().toString(),name:name,birthday:document.getElementById('newBday').value,tags:[],records:[],createdAt:new Date().toISOString()};
-  clients.unshift(c); closeNewModal(); renderList(); openDetail(c.id); scheduleSync();
+  clients.unshift(c);closeNewModal();renderList();openDetail(c.id);scheduleSync();
 }
 document.getElementById('newModal').addEventListener('click',function(e){if(e.target===this)closeNewModal();});
 
-// ── Tag modal ─────────────────────────────
+// ── Tag modal ──
 function openTagModal(){
   document.getElementById('tagModal').classList.add('open');
   document.getElementById('tagName').value='';
   newTagColor=TAG_COLORS[0];
-  const picker=document.getElementById('colorPicker');
-  picker.innerHTML=TAG_COLORS.map(function(c){
-    return '<div class="color-dot'+(c===newTagColor?' chosen':'')+'" style="background:'+c+'" onclick="pickColor(\''+c+'\',this)"></div>';
+  document.getElementById('colorRow').innerHTML=TAG_COLORS.map(function(c){
+    return '<div class="cdot'+(c===newTagColor?' on':'')+'" style="background:'+c+'" onclick="pickColor(\''+c+'\',this)"></div>';
   }).join('');
 }
 function closeTagModal(){document.getElementById('tagModal').classList.remove('open');}
-function pickColor(c,el){
-  newTagColor=c;
-  document.querySelectorAll('.color-dot').forEach(function(d){d.classList.remove('chosen');});
-  el.classList.add('chosen');
-}
+function pickColor(c,el){newTagColor=c;document.querySelectorAll('.cdot').forEach(function(d){d.classList.remove('on');});el.classList.add('on');}
 function confirmAddTag(){
-  const name=document.getElementById('tagName').value.trim();
-  if(!name){alert('請輸入標籤名稱');return;}
-  const id='tag_'+Date.now();
-  customTags.push({id:id,name:name,color:newTagColor});
-  closeTagModal();
-  renderChips();
-  // Re-render tags in detail if open
-  const c=clients.find(function(x){return x.id===currentId;});
-  if(c)renderDetail(c);
-  scheduleSync();
-  showToast('標籤已新增','ok');
+  const name=document.getElementById('tagName').value.trim();if(!name){alert('請輸入標籤名稱');return;}
+  tags.push({id:'tag_'+Date.now(),name:name,color:newTagColor});
+  closeTagModal();renderChips();
+  const c=clients.find(function(x){return x.id===currentId;});if(c)renderDetail(c);
+  scheduleSync();showToast('標籤已新增 🏷️','ok');
 }
 document.getElementById('tagModal').addEventListener('click',function(e){if(e.target===this)closeTagModal();});
 </script>
