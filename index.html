@@ -115,6 +115,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 .rec-date{font-size:17px;font-weight:800;color:#8850c8;border:none;background:transparent;outline:none;letter-spacing:.3px;}
 .btn-recdel{background:none;border:none;color:#ff3b30;font-size:20px;cursor:pointer;}
 .rec-field{padding:0 14px;border-bottom:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.45);}
+.note-wrap{position:relative;}
+.note-preview{font-size:16px;color:var(--text1);padding:8px 0 10px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.note-full{font-size:16px;color:var(--text1);padding:8px 0 10px;line-height:1.6;display:none;white-space:pre-wrap;word-break:break-all;}
+.note-textarea{width:100%;font-size:16px;border:none;background:transparent;color:var(--text1);outline:none;resize:none;line-height:1.6;padding:8px 0 10px;min-height:80px;}
+.note-textarea::placeholder{color:var(--text3);}
+.btn-expand{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#9055c8;background:rgba(144,85,200,.1);border:none;border-radius:20px;padding:4px 12px;cursor:pointer;margin-bottom:10px;}
+.note-modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:flex-end;}
+.note-modal-bg.open{display:flex;}
+.note-modal{background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 48px;width:100%;max-height:80vh;display:flex;flex-direction:column;gap:12px;}
+.note-modal-header{display:flex;align-items:center;justify-content:space-between;}
+.note-modal-title{font-size:17px;font-weight:700;color:var(--text1);}
+.btn-note-close{font-size:15px;font-weight:600;color:#9055c8;background:none;border:none;cursor:pointer;padding:4px 8px;}
+.note-modal-content{font-size:17px;color:var(--text1);line-height:1.8;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-all;padding:4px 0;}
 .rec-field:last-child{border-bottom:none;border-radius:0 0 var(--r-lg) var(--r-lg);}
 .rec-flabel{font-size:11px;font-weight:700;color:var(--text3);padding-top:10px;letter-spacing:.4px;text-transform:uppercase;}
 .rec-field input,.rec-field textarea{width:100%;font-size:17px;border:none;background:transparent;color:var(--text1);outline:none;padding:6px 0 10px;resize:none;line-height:1.5;}
@@ -249,6 +262,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
       <button class="btn-mcancel" onclick="closeTagModal()">取消</button>
       <button class="btn-mok" onclick="confirmAddTag()">新增</button>
     </div>
+  </div>
+</div>
+
+<!-- Note expand modal -->
+<div class="note-modal-bg" id="noteModal">
+  <div class="note-modal">
+    <div class="note-modal-header">
+      <div class="note-modal-title">📝 小筆記</div>
+      <button class="btn-note-close" onclick="closeNoteModal()">完成</button>
+    </div>
+    <div class="note-modal-content" id="noteModalContent"></div>
   </div>
 </div>
 
@@ -472,6 +496,16 @@ function openDetail(id){
   renderDetail(c);
   document.getElementById('detailPanel').classList.add('open');
 }
+function openNoteModal(rid, encodedNote){
+  const note = decodeURIComponent(encodedNote);
+  document.getElementById('noteModalContent').textContent = note;
+  document.getElementById('noteModal').classList.add('open');
+}
+function closeNoteModal(){
+  document.getElementById('noteModal').classList.remove('open');
+}
+document.getElementById('noteModal').addEventListener('click',function(e){if(e.target===this)closeNoteModal();});
+
 function closeDetail(){
   document.getElementById('detailPanel').classList.remove('open');
   currentId=null;renderList();
@@ -491,7 +525,14 @@ function renderDetail(c){
       '</div>'+
       '<div class="rec-field"><div class="rec-flabel">療程項目</div><input type="text" value="'+(r.procedure||'')+'" placeholder="水光、電波、玻尿酸…" onchange="updateRec(\''+r.id+'\',\'procedure\',this.value)"/></div>'+
 
-      '<div class="rec-field"><div class="rec-flabel">小筆記</div><textarea rows="2" placeholder="私人備註…" onchange="updateRec(\''+r.id+'\',\'note\',this.value)">'+(r.note||'')+'</textarea></div>'+
+      '<div class="rec-field"><div class="rec-flabel">小筆記</div>'+
+      '<div class="note-wrap">'+
+      (r.note?
+        '<div class="note-preview">'+r.note.replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</div>'+
+        '<button class="btn-expand" onclick="openNoteModal(\''+r.id+'\',\''+encodeURIComponent(r.note||'')+'\')">' +
+        '<i class="ti ti-arrows-maximize" style="font-size:13px"></i> 展開全文</button>'
+        :'<textarea class="note-textarea" placeholder="私人備註…" onchange="updateRec(\''+r.id+'\',\'note\',this.value)"></textarea>')+
+      '</div></div>'+
       '</div>';
   }).join('');
 
