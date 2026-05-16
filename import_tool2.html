@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>批量匯入工具</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,sans-serif;background:#f8f5ee;padding:16px;font-size:15px;}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(130,80,60,.08);}
+h1{font-size:19px;font-weight:700;color:#3a3530;margin-bottom:4px;}
+.sub{font-size:13px;color:#7a6e65;margin-bottom:16px;}
+.info{background:#fdf5ee;border:1px solid #e8d0b8;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;color:#7a5a40;line-height:1.7;}
+.client-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f5f0e8;font-size:14px;}
+.client-row:last-child{border-bottom:none;}
+.idx{width:24px;color:#b0a898;font-size:12px;flex-shrink:0;}
+.cname{font-weight:600;color:#3a3530;width:60px;flex-shrink:0;}
+.cbday{color:#8a7d6e;width:95px;flex-shrink:0;font-size:12px;}
+.cnote{color:#b0a898;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}
+.btn{display:block;width:100%;padding:15px;font-size:17px;font-weight:700;border:none;border-radius:14px;background:linear-gradient(135deg,#b8927a,#8a7d9e);color:#fff;cursor:pointer;margin-top:16px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.status{margin-top:12px;font-size:14px;color:#7a6e65;text-align:center;min-height:20px;}
+.progress{width:100%;height:8px;background:#f0e8e0;border-radius:10px;margin-top:10px;overflow:hidden;display:none;}
+.progress-bar{height:100%;background:linear-gradient(135deg,#b8927a,#8a7d9e);border-radius:10px;transition:width .2s;width:0%;}
+.ok{color:#5a8a6a;font-weight:600;}
+.er{color:#cc4444;}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>&#x1F4CB; 批量匯入工具</h1>
+  <div class="sub">共 71 位客戶</div>
+  <div class="info">
+    &#x26A0;&#xFE0F; 使用前請確認：<br>
+    1. 已在<strong>客戶關懷系統</strong>用同一瀏覽器登入<br>
+    2. 同名客戶會自動合併<br>
+    3. 民國生日已自動轉換為西元
+  </div>
+  <div id="clientList"></div>
+  <button class="btn" id="importBtn" onclick="startImport()">開始匯入 71 位客戶</button>
+  <div class="progress" id="prog"><div class="progress-bar" id="bar"></div></div>
+  <div class="status" id="status"></div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script>
+var IMPORT_DATA = [{"name": "謝乃晴", "birthday": "1990-04-08", "records": [{"visit_date": "2026-04-01", "note": "兒子四歲，目前沒有上班帶小孩，之前有得過乳癌已經治療完成，去年打過鳳凰電波覺得很痛，覺得這幾年長出斑，臉上有淺斑也有肝斑，今天有打結痂，只蜂巢100，回家感受一下"}]}, {"name": "李語涵", "birthday": "2004-03-26", "records": [{"visit_date": "2026-04-02", "note": "還在讀大學，9月要出國遊學半年，私密處2年卡，出國時再申請展延"}]}, {"name": "劉沛瑄", "birthday": "1980-11-08", "records": [{"visit_date": "2026-04-02", "note": "1個女兒8歲，年輕時皮膚不錯，都沒擦保養防曬，最近過敏，今天臉會癢，乾紅，在意鼻頭粉刺，也想讓皮膚亮，買心動光+海菲秀套組。4/11來打心動光，上次做完皮膚有比較好，晚上有很多疣，下次可以處理淺層斑點。4/22來做海菲秀，有請客人先去皮膚科處理疣"}]}, {"name": "林麗卿", "birthday": "1956-08-27", "records": [{"visit_date": "2026-04-02", "note": "之前都在愛爾麗，最近想換一家醫美，現在還有在上班，皮膚都沒有擦保養跟防曬超乾，在意紋路，醫生建議木偶紋2CC，要先存錢"}]}, {"name": "黃明月", "birthday": "1999-03-31", "records": [{"visit_date": "2026-04-03", "note": "王芷翎同事，平常會追劇，脖子有點扭到，人和氣，愛笑，有建議N肉毒9999"}]}, {"name": "李佩庭", "birthday": "1980-06-01", "records": [{"visit_date": "2026-04-03", "note": "結婚沒有生小孩，臉上有很多肝斑，去林亮辰，覺得貴，平常會騎腳踏車，喜歡戶外活動，建議一定要一個月做一次，之前一年只做2次，要慢慢打，有用A純，要停擦，4/5來買3堂皮秒，3000蜂+3堂wishpro"}]}, {"name": "黃司澐", "birthday": "1991-09-13", "records": [{"visit_date": "2026-04-03", "note": "去年一月才打過10倍電波600發，在意眼周，一年前有做過眼袋手術，之前打過眼周音波，覺得效果很好，有建議電波要打全臉，不敢侵入式，沒打過肉毒，今天先做眼周音波600條"}]}, {"name": "曾評", "birthday": "1990-01-06", "records": [{"visit_date": "2026-04-04", "note": "女兒1歲6個月，去年一月有打偏頭痛肉毒160u，在意臉頰毛孔，2頰敏感，膚色不均，顆粒感粉刺，今天先打2cc skinvive，有效果會再持續做療程，假日跟老公輪流顧小孩，所以時間緊湊，童顏針打過一瓶而已，也覺得有效果"}]}, {"name": "賴亭均", "birthday": "1999-03-30", "records": [{"visit_date": "2026-04-05", "note": "只有假日有空，平常工作壓力大會咬牙齒，所以咬肌很大，醫生估60u，今天打50u放鬆就好"}]}, {"name": "丁婉芯", "birthday": "1998-03-31", "records": [{"visit_date": "2026-04-07", "note": "平常有擦酸改善粉刺，皮膚其實偏乾，建議不要擦酸固定可以做海菲秀，是鋼琴老師"}]}, {"name": "曾鈺惠", "birthday": "1981-05-03", "records": [{"visit_date": "2026-04-08", "note": "朋友艾嵐妮，想要先瘦身，怕售到肌肉量，所以買embody，瘦身之後再來考慮臉部保養，朋友之前痘痘膚質，報價小喬28000，volite32000，回去想想，有帶一個朋友來，推薦海飛秀套組"}]}, {"name": "劉姿吟", "birthday": "1986-08-20", "records": [{"visit_date": "2026-04-08", "note": "在意膚質，毛孔，也想讓皮膚比較緊實，年輕是油性肌，有預算考量，更換的療程想要換成喬雅露，皮膚敏感，在擦杜鵑花酸擦了兩三個月，改善粉刺，建議PLT覺得貴，問母親節是否有活動，思考中"}]}, {"name": "余文琳", "birthday": "1978-02-19", "records": [{"visit_date": "2026-04-09", "note": "誦經師姐，有兩個小孩，離婚了男朋友是香港人，一個月去一次香港，男朋友一個月會來台灣四次，希望不要太常見面，喜歡一個人看電影，之前別地方打過猛健樂，一開始就是打五，瘦了8公斤，平常有做一些伸展運動跟慢跑，今天先打猛健樂跟燃脂點滴。5/7平常食量就不大，這次打5毫克很不餓，吃不完都會男朋友或女兒幫忙吃"}]}, {"name": "彭若菱", "birthday": "1999-12-21", "records": [{"visit_date": "2026-04-10", "note": "1個兒子四歲，從來沒做過醫美，去年打2次10mg猛健樂，帶回去自己打，四個月瘦10公斤，停一個月復胖回來再打+燃脂點滴，也想除毛，但是一次沒有辦法花太多錢，已報體驗價，也想讓先生來除鬍，有告知介紹禮"}]}, {"name": "宋元善", "birthday": "1995-09-11", "records": [{"visit_date": "2026-04-10", "note": "從來沒做過醫美，五年前開始酒糟，在意皮膚紅敏感還有毛孔粗大，建議心動光+皮蜂，覺得兩萬多太貴，建議心動光年卡或是4+3堂，回去感受一下，覺得保養品很多不買霜，建議乳液擦兩次"}]}, {"name": "葉珊吟", "birthday": "1984-05-11", "records": [{"visit_date": "2026-04-11", "note": "去年11月韓國打電音波，鳳凰能量4.2，要找裕恩，先買肉毒，覺得我們逆時針貴"}]}, {"name": "蔡萻萁", "birthday": "2000-08-03", "records": [{"visit_date": "2026-04-12", "note": "工程師，紀也認識，不熟，有在玩股票，希望一個月能賺5000，有問Neo體驗，燃脂點滴體驗，平常有在健身，想先靠健身，朋友很多等她分享，有告知介紹禮"}]}, {"name": "鄭炎美", "birthday": "1965-03-08", "records": [{"visit_date": "2026-04-12", "note": "平常住美國，現在回來，七月會再回美國，每年在美國打一次美國音波，皮膚狀況不錯，平常有在打肉毒保養，醫生建議一個月後再回來打逆時針，客人希望完全沒修護期"}]}, {"name": "陳靜琦", "birthday": "1974-01-21", "records": [{"visit_date": "2026-04-13", "note": "公務人員，今年退休，不太敢打皮秒怕反黑，現在在別地方有做水光針，有加傳明酸，覺得對斑點的效果很好，那邊做完才會來我們這邊做，等六月出國玩回來才會來做水光針，去年11月打鳳凰電波覺得沒什麼感覺，有告知客人本身狀況還不錯，他就是延緩老化，兒子在林亮辰那邊治療凹洞，兒子現在在美國讀書，兒子有打up雷射，也有做過PLT，很肯花錢在兒子身上"}]}, {"name": "林宛瑜", "birthday": "1988-04-17", "records": [{"visit_date": "2026-04-13", "note": "兩個兒子，一個幼稚園要小班，1個差一年九個月，結束孕嬰後可能會離職，有定期在市區做滾針，做完海菲秀皮膚超亮"}]}, {"name": "邱玉茹", "birthday": "1992-04-09", "records": [{"visit_date": "2026-04-13", "note": "半年前皮膚過敏，到現在紅，會癢，長痘痘，建議PLT，17萬，但是覺得貴，想先做心動光改善，約下週，今天做完海菲秀，皮膚亮，一點點退紅"}]}, {"name": "張芳瑜", "birthday": "2000-07-07", "records": [{"visit_date": "2026-04-14", "note": "在聯發科上班，第一次做醫美，人家有斑點，暗沉，帶霜買一送一，今天有打結痂，回去感受一下"}]}, {"name": "陳妍潔", "birthday": "1981-07-14", "records": [{"visit_date": "2026-04-15", "note": "兩個兒子，大兒子高一，六月滿16歲雙子座，小兒子小學五年級，金牛座，很好動很聰明，哥哥比較會讀書，弟弟是人工受孕來的。聯發科子公司上班，老公在林口上班每天通車，之前打過一次鳳凰覺得超痛，需要心理建設，考慮要不要換成無雙電波，喜歡海菲秀，有告訴母親節活動，要想一想有告知介紹禮。4/23有問到冷凍減脂，告訴我們的是NEO，想做大腿內側，建議可以大腿後側外側屁股下。4/24前天有去愛爾麗做體雕體驗，被推銷冷凍減脂要10幾萬，有預算考量先不要"}]}, {"name": "陳羽芊", "birthday": "", "records": [{"visit_date": "2026-04-15", "note": "有介紹同事來腋下除毛，除毛不要吳醫師"}]}, {"name": "彭晞茹", "birthday": "2001-10-11", "records": [{"visit_date": "2026-04-16", "note": "沒有結婚，一個兒子四歲，體脂，內臟脂肪超高，有體驗燃脂點滴，先買Embody36堂，之後還是可以推燃脂點滴套組，已報價"}]}, {"name": "張榕尹", "birthday": "1986-08-04", "records": [{"visit_date": "2026-04-16", "note": "來體驗海菲秀，上次在別地方打皮秒整臉爆痘，弟弟即將要結婚，想買體驗除鬍子，跟海菲秀給弟弟跟弟媳，有報海菲秀套組，跟皮秒8888，16999"}]}, {"name": "林珮玉", "birthday": "1977-08-07", "records": [{"visit_date": "2026-04-16", "note": "一個月在新加坡一個月在台灣，都沒做過醫美，不想要侵入式，非常怕痛，今天先買海飛秀套組66000，有告知電音波也沒有侵入式，之後再看"}]}, {"name": "曾善浼", "birthday": "1996-01-08", "records": [{"visit_date": "2026-04-17", "note": "女兒4歲，還想生第二胎，老公日本工作，2.3年了，1年回來一次，覺得生完小孩斑變多，在意鼻頭粉刺，也想除私密處，今先儲值"}]}, {"name": "林真慧", "birthday": "1977-02-24", "records": [{"visit_date": "2026-04-17", "note": "曾鈺惠朋友，沒做過醫美，先做海菲秀，臉有乾斑，報套組10堂49999，15堂66000"}]}, {"name": "劉生武", "birthday": "1958-06-15", "records": [{"visit_date": "2026-04-17", "note": "深斑很多，只有擦乳液沒有擦防曬，以為一次就會掉，醫生說至少四次，報5000發=65000，下次再看，今天先帶乳液還有防曬面膜，今天有打結痂"}]}, {"name": "洪羽瑤", "birthday": "1988-09-15", "records": [{"visit_date": "2026-04-17", "note": "瑪姬朋友，皮膚較敏感，深斑很多，淺斑也很多，毛孔也很大，建議PLT，現在正在備孕，打算做試管，十月份有去配天宮到現在還沒有懷孕，建議再去拜一次，套組26萬，回去跟老公討論一下，先付2萬訂金，公司在竹北遠百附近，家裡住新竹火車站附近"}]}, {"name": "黃詩婷", "birthday": "1991-09-09", "records": [{"visit_date": "2026-04-18", "note": "今天體驗VIO除毛跟臉雜，臉部有一點點小小刮傷，但沒有傷口，紅紅的，先買兩年卡，建議可以做海菲秀，下半臉有痘痘"}]}, {"name": "張家禎", "birthday": "1993-10-09", "records": [{"visit_date": "2026-04-18", "note": "顏于婷介紹，腋下之前打過冰肌，毛量很少，VIO毛量比較多，都先買兩年卡"}]}, {"name": "曾秀金", "birthday": "1966-08-22", "records": [{"visit_date": "2026-04-18", "note": "疫情時打過一次雷射，覺得這幾年突然間翻邊深，臉頰的斑看起來像是肝斑，還有PIH色素沉澱，只用隔離霜，建議單純擦防曬，今天有帶霜1+1，還有防曬跟面膜，建議五次療程先做治療，先付訂金15000，醫生說吃傳明酸一個月，兩個禮拜自費"}]}, {"name": "陳姵希", "birthday": "1998-05-09", "records": [{"visit_date": "2026-04-20", "note": "兒子兩個月大，是國小老師，請育嬰假到八月，之前用過蜜蠟除毛，毛根還是粗的，有問妊娠紋，告知PLT報價14萬，臉上蠻多斑的"}]}, {"name": "黃子音", "birthday": "1986-04-05", "records": [{"visit_date": "2026-04-20", "note": "沒有想除腋下，vio考慮要兩年還是終身，有告知客人介紹禮，皮蜂100=8888"}]}, {"name": "林廷穎", "birthday": "1983-07-21", "records": [{"visit_date": "2026-04-21", "note": "中華路賣賓士車，一個小孩已經很大了高中，五月要出國，所以今天來大整理，之前台北W醫美，感覺還不錯，兩年前去的，今天第一次打電波，痛到哭，平常都有在運動，工作很忙，很難有時間休假幾乎都上班，也有問手指頭的皺紋醫生建議打逆時針"}]}, {"name": "黎芳君", "birthday": "1992-12-23", "records": [{"visit_date": "2026-04-22", "note": "還是在桃園上班每天通勤，偶爾放假會去打高爾夫球，在意臉頰的凹洞，覺得水光很痛，非常在意眼下的細紋，我們考慮眼周電波，建議小喬雅露比較適合，還可以改善黑眼圈，覺得喬雅露效果很好"}]}, {"name": "黎雪玲", "birthday": "1987-06-17", "records": [{"visit_date": "2026-04-23", "note": "目前沒有工作，先買海菲秀體驗，腋下2年卡，抬頭皺眉紋也很深，之後再考慮肉毒，臉上很容易出油毛孔又大"}]}, {"name": "陳柔伊", "birthday": "1996-01-22", "records": [{"visit_date": "2026-04-25", "note": "腋下毛髮比較少，今天買腋下跟私密處兩年卡，介紹海+wishpro3500下次再問"}]}, {"name": "鍾易真", "birthday": "", "records": [{"visit_date": "2026-04-25", "note": "謝乃晴朋友，平常顧小孩沒時間"}]}, {"name": "楊鈴玉", "birthday": "", "records": [{"visit_date": "2026-04-25", "note": "佐登妮絲刷杏仁酸，沒清粉刺，在意鼻頭粉刺，臉頰敏感，回去感受一下"}]}, {"name": "張珺珽", "birthday": "1991-11-06", "records": [{"visit_date": "2026-04-25", "note": "醫美小白，覺得鼻子很塌建議打玻尿酸，但是會怕也在意斑點，兩頰超級敏感肌膚檢測有用到含汞的保養品，建議打肉毒瘦小臉跟鳳凰電波，4/26來做心動光明顯退紅，變得很亮，不在乎優惠一堂變多少而是在意總金額的價格有沒有符合預算"}]}, {"name": "湯蕙慈", "birthday": "1986-03-10", "records": [{"visit_date": "2026-04-27", "note": "有甲狀腺結節，兒子文靜，很少犯錯，9歲，有在別家醫美打柏金蜂巢還有鳳凰電波，皮膚從很小就泛紅，所以不在意，體脂跟內臟脂肪高，老公也有打猛健樂需求"}]}, {"name": "吳艾倫", "birthday": "1994-01-22", "records": [{"visit_date": "2026-04-27", "note": "女兒一歲半娘家媽媽幫忙顧，想要改善膚質，在意毛孔斑點，做完要回去感受一下"}]}, {"name": "楊依倢", "birthday": "1997-03-11", "records": [{"visit_date": "2026-04-27", "note": "有預算考量，先買私密處除毛兩年卡也有手毛，但是不在意"}]}, {"name": "陳怡臻", "birthday": "1996-09-02", "records": [{"visit_date": "2026-04-29", "note": "之前台北打過鉑金皮秒，沒什麼感覺，小腿有一撮毛，這個月已經在別家打了舒顏萃，花了要10萬，沒有預算了，有建議皮秒套組，每年都會去雪地滑雪，有深斑淺斑"}]}, {"name": "蕭吟庭", "birthday": "1995-01-17", "records": [{"visit_date": "2026-04-29", "note": "原美學的咨詢師，但不想讓人家知道，今年五月要結婚"}]}, {"name": "張筱瑩", "birthday": "", "records": [{"visit_date": "2026-03-01", "note": "無生日 鼻子有胎記，之前打過2次，有點限下去，臉有深淺斑，都沒做過醫美，有在意鼻基底凹陷，不要侵入式，建議無雙電波，有問茶會，3/13再問"}]}, {"name": "藍安安", "birthday": "", "records": [{"visit_date": "2026-02-04", "note": "無生日 住在山上下來要一個小時，皮膚超敏感容易泛紅，工作是療癒師，考慮將課程換為PLT，很重服務，老公韓國人，4/20每年回韓國一次，很認真敷面膜，覺得單針瘀青很久，喜歡全水光針，今天改保養品儲值30000"}]}, {"name": "張淑鈴", "birthday": "1979-02-24", "records": [{"visit_date": "2026-03-05", "note": "之前在別地方打斑反黑，很便宜，用韓國重鑽，要先停，回去看打完反應，3/31斑淡很多，來買皮3蜂3000，海+wishpro體，花錢怕沒效，也怕老公發現，想打肉毒，目前沒預算，有告知介紹禮，4月中要白沙屯媽祖，所以4月初先海菲秀，回來再打雷射"}]}, {"name": "張家毓", "birthday": "", "records": [{"visit_date": "2026-03-06", "note": "無生日 香的同學，一個兒子2歲，沒有要再生了，也在意臉上斑，有雀斑，深斑，額頭有痘，有血管絲，不要填充，公家機關護理師，4/23上次新動光，結痂班都掉很多，這次改為4+3套組局部光梭，海菲秀10+5，有在投資最近股市很好"}]}, {"name": "姚品喻", "birthday": "1977-08-20", "records": [{"visit_date": "2026-03-07", "note": "體重91，要瘦到52，之前園區作業員，現在助工，有甲狀腺問題，媽媽跟妹妹都割掉，先瘦體重之後再看體雕，離婚，女兒20，大學生，有預算考量，味覺整個變了，變得清淡，水量很多，膝蓋不太好，不能常常爬樓梯，單親媽媽，跟女兒像朋友，5/2要去綠島玩，這張看眼尾覺得睫毛容意沾黏，也想除但是目前沒錢，有跟客人講可以介紹朋友來，有介紹禮肉毒"}]}, {"name": "周郁汶", "birthday": "1988-05-16", "records": [{"visit_date": "2026-03-14", "note": "老公韓國人，不想讓人家發現做醫美，鼻子，下巴超敏感，兒子12歲，之前有去韓國打過音波200條覺得效果還好，沒有要變得很誇張，想要回到年輕的狀態，吃A酸治療皮膚會長痘痘，停了一個月，還是覺得皮膚很容易出油，做了海飛修跟wishpro退紅很多，1月去韓國打音波，才打200條，3/27今天打下巴肉毒8U，醫生建議打下巴玻尿酸三到四CC，有告知先2CC調整，沒有想要改變很多，音波要再加300條全部加起來差不多70000半年後做"}]}, {"name": "吳惠敏", "birthday": "1975-07-04", "records": [{"visit_date": "2026-03-21", "note": "皮拉提斯老師，之前朋友推薦南門醫院打斑，覺得太遠，一年只做1次，最近覺得斑變深，欠陣子去韓國打美白皮秒+麗珠蘭水光，覺得皮膚提亮效果很好，想就近找醫美保養，剛進來防心很重，平常沒擦防曬，只擦隔離霜"}]}, {"name": "范麗萍", "birthday": "1982-04-10", "records": [{"visit_date": "2026-03-24", "note": "兒子3歲，先生常出差，2個月外面，回家半個月"}]}, {"name": "黃湘喻", "birthday": "", "records": [{"visit_date": "2026-03-24", "note": "無生日 土地買賣相關，有時突然忙，有問靜脈雷射"}]}, {"name": "古蕊綺", "birthday": "1986-06-08", "records": [{"visit_date": "2026-03-27", "note": "在怡康有打雷射，兩頰很多圓點的斑點，說在怡康療程還很多"}]}, {"name": "王維欣", "birthday": "1988-08-03", "records": [{"visit_date": "2026-03-27", "note": "有時會飛去韓國打水光，平常會去台北做其他療程，因為便宜"}]}, {"name": "劉佳蓉", "birthday": "1989-07-15", "records": [{"visit_date": "2026-03-28", "note": "結婚沒小孩，說生不出來，皮膚太容易出油敏感，多年不見朋友，覺得膚質有改善，臉頰有肝斑快跑出來，每次來要加傳明酸，在意出油會改善嗎，自己覺得現在皮膚蠻ok的，血管很細，不好打針，怕痛，沒想打電波"}]}, {"name": "徐敏嘉", "birthday": "1978-01-27", "records": [{"visit_date": "2026-03-30", "note": "去年打過鳳凰，痛，多年前打過音波也覺得痛，2個兒子，高中，大學，之後帶來做海菲秀，不想侵入式，最近覺得自己老很多，嘴邊肉下來，今天打無雙不痛，音波痛，接下來要出國，回來再約心動光海菲秀，帶現金來付"}]}, {"name": "邱綵葳", "birthday": "1966-10-14", "records": [{"visit_date": "2026-03-31", "note": "小予老公的客戶曾老闆的老婆，之前打玩美電波，固定打肉毒，覺得之前埋線效果好，臉鬆垂薄，對診所還沒信任感，先買肉毒，約4/7給裕恩打"}]}, {"name": "林暐靜", "birthday": "", "records": [{"visit_date": "2026-02-02", "note": "無生日 工程師，板橋人，星期五晚上會回板橋，有預算考量，在意胯下，側腰黑色素暗沉，報3+3=30000，共用3堂，vio2年咖=29999，腋下2年12999"}]}, {"name": "彭淑貞", "birthday": "", "records": [{"visit_date": "2026-02-12", "note": "無生日 跟台積接洽的業務廠上，女兒12歲，有商業頭腦，兒子8歲，比較疼兒子，都不會幫小孩做事，讓小孩比較獨立，兩年前做過五爪拉皮。眼下做了縫雙眼皮，之後想要抽眼下脂肪，也做過超音波減脂，最近比較忙沒有去健身房，之前做過embody覺得完全沒效果沒感覺，社區很多鄰居都有問他去做了什麼醫美，有請客人介紹客人有介紹禮，2/26做鳳凰臉+眼，第一次打眼睛比較緊張，女兒排球校隊，2年了，兒子也排球校隊，都要跑步+跳繩練習，3月中出國，2/22不要音波跟玻尿酸了，換成Neo"}]}, {"name": "陳宥妘", "birthday": "", "records": [{"visit_date": "2026-02-21", "note": "無生日 臉上有深淺斑，很有預算考量，之前別間光打皮秒5堂5萬，這次買5000發蜂巢，保養品買13980，要有效果"}]}, {"name": "謝佳芸", "birthday": "", "records": [{"visit_date": "2026-02-21", "note": "無生日 住斜對面，女兒8月滿16歲，才能做海菲秀，之前都在左登妮絲做臉，太常換美容師，所以想改來醫美，非常非常怕痛，今買海菲秀跟肉毒，也在意眉間凹洞，但怕痛，慢慢來，之後可以先推電波"}]}, {"name": "羅羽莀", "birthday": "", "records": [{"visit_date": "2026-02-25", "note": "無生日 之前韓國打過美國音波跟肉毒肩膀，在意淚溝，不想打HA，建議大喬1瓶3萬，問老公後說先不打，很有預算考量，在星和還有2堂皮秒，不愛星和的服務，都來這邊買很多體驗課程，體驗完沒有在買"}]}, {"name": "黎昱萱", "birthday": "", "records": [{"visit_date": "2026-02-25", "note": "無生日 工程師，很有氣質，買全身除毛，2天前在星和打肉毒咬肌，跟鼻基底玻尿酸1cc，之前韓國打過肩膀肉毒，2個星期就沒效果，肩膀還是硬一塊，平常都打電腦，肩膀僵硬，建議在台灣打，在意雙下巴，建議溶脂音波，後來改儲值30萬，3/29 5月要一起打音波，肉毒肩膀"}]}, {"name": "詹佳苓", "birthday": "", "records": [{"visit_date": "2026-02-26", "note": "無生日 餐飲業服務生，一個兒子5歲，平常婆婆顧，之前韓國打肉毒，去年四月隔很久了，建議不要隔太久，眼下淚溝看起來很累，今天打玻尿酸3cc"}]}, {"name": "吳春映", "birthday": "", "records": [{"visit_date": "2026-02-26", "note": "無生日 有在愛爾麗跟原美學做過，打B肉毒沒效，覺得原美學消脂點滴便宜"}]}, {"name": "劉沛晴", "birthday": "", "records": [{"visit_date": "2026-02-27", "note": "無生日 一個兒子5歲，老公都會到國外出差，皮膚很敏感，在意斑，毛孔，兒子保姆帶，建議皮蜂，PLT未報價，下次報"}]}];
+var CLIENT_ID = '543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
+var SHEET_TITLE = 'Miu客戶關懷';
+var gToken = null;
+var gSheetId = null;
+
+// Render preview
+window.onload = function() {
+  var list = document.getElementById('clientList');
+  var html = '';
+  for (var i = 0; i < IMPORT_DATA.length; i++) {
+    var c = IMPORT_DATA[i];
+    var note = c.records && c.records[0] ? c.records[0].note.slice(0, 25) + '...' : '';
+    html += '<div class="client-row">' +
+      '<span class="idx">' + (i+1) + '</span>' +
+      '<span class="cname">' + c.name + '</span>' +
+      '<span class="cbday">' + (c.birthday || '未填生日') + '</span>' +
+      '<span class="cnote">' + note + '</span>' +
+      '</div>';
+  }
+  list.innerHTML = html;
+};
+
+function setStatus(msg, cls) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status ' + (cls || '');
+}
+
+function startImport() {
+  document.getElementById('importBtn').disabled = true;
+  setStatus('登入 Google 中…');
+
+  function waitGSI() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+      google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly email',
+        callback: function(resp) {
+          if (resp.error) {
+            setStatus('登入失敗：' + resp.error, 'er');
+            document.getElementById('importBtn').disabled = false;
+            return;
+          }
+          gToken = resp.access_token;
+          setStatus('登入成功，搜尋試算表…');
+          findSheet();
+        }
+      }).requestAccessToken();
+    } else {
+      setTimeout(waitGSI, 200);
+    }
+  }
+  waitGSI();
+}
+
+function findSheet() {
+  var q = encodeURIComponent("name='客戶關懷系統' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false");
+  fetch('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)', {
+    headers: { Authorization: 'Bearer ' + gToken }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (!res.files || res.files.length === 0) {
+      setStatus('找不到試算表！請先登入客戶關懷系統一次', 'er');
+      document.getElementById('importBtn').disabled = false;
+      return;
+    }
+    gSheetId = res.files[0].id;
+    setStatus('找到試算表，讀取現有資料…');
+    doImport();
+  })
+  .catch(function() {
+    setStatus('搜尋失敗，請重試', 'er');
+    document.getElementById('importBtn').disabled = false;
+  });
+}
+
+function doImport() {
+  var prog = document.getElementById('prog');
+  var bar = document.getElementById('bar');
+  prog.style.display = 'block';
+
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + gSheetId + '/values/' + encodeURIComponent(SHEET_TITLE + '!A2:G'), {
+    headers: { Authorization: 'Bearer ' + gToken }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(existing) {
+    var rows = existing.values || [];
+    var clients = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var recs = [];
+      try { recs = JSON.parse(r[4] || '[]'); } catch(e) { recs = []; }
+      if (r[0]) {
+        clients.push({
+          id: r[0], name: r[1] || '', birthday: r[2] || '',
+          tags: r[3] ? r[3].split(',').filter(Boolean) : [],
+          records: recs,
+          createdAt: r[5] || '', code: r[6] || ''
+        });
+      }
+    }
+
+    var total = IMPORT_DATA.length;
+    var processed = 0;
+
+    function processNext() {
+      if (processed >= total) {
+        writeSheet(clients);
+        return;
+      }
+      var d = IMPORT_DATA[processed];
+      bar.style.width = Math.round((processed + 1) / total * 100) + '%';
+      setStatus('處理 ' + (processed + 1) + '/' + total + '：' + d.name);
+
+      var found = null;
+      for (var j = 0; j < clients.length; j++) {
+        if (clients[j].name === d.name) { found = clients[j]; break; }
+      }
+
+      var newRecs = [];
+      for (var k = 0; k < d.records.length; k++) {
+        newRecs.push({
+          id: Date.now().toString() + '_' + processed + '_' + k,
+          date: d.records[k].visit_date,
+          procedure: '',
+          note: d.records[k].note
+        });
+      }
+
+      if (found) {
+        found.records = (found.records || []).concat(newRecs);
+        found.records.sort(function(a, b) { return b.date.localeCompare(a.date); });
+        if (!found.birthday && d.birthday) found.birthday = d.birthday;
+      } else {
+        clients.push({
+          id: Date.now().toString() + '_' + processed,
+          name: d.name,
+          birthday: d.birthday || '',
+          tags: [],
+          records: newRecs,
+          createdAt: new Date().toISOString(),
+          code: ''
+        });
+      }
+
+      processed++;
+      setTimeout(processNext, 20);
+    }
+
+    processNext();
+  });
+}
+
+function writeSheet(clients) {
+  setStatus('寫入 Google Sheets…');
+  var values = [['ID', '姓名', '生日', '標籤', '紀錄JSON', '建立時間', '編號']];
+  for (var i = 0; i < clients.length; i++) {
+    var c = clients[i];
+    values.push([
+      c.id, c.name, c.birthday || '',
+      c.tags.join(','),
+      JSON.stringify(c.records || []),
+      c.createdAt || '', c.code || ''
+    ]);
+  }
+
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + gSheetId + '/values/' + encodeURIComponent(SHEET_TITLE + '!A1') + '?valueInputOption=RAW', {
+    method: 'PUT',
+    headers: { Authorization: 'Bearer ' + gToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values: values })
+  })
+  .then(function() {
+    document.getElementById('bar').style.width = '100%';
+    setStatus('✓ 匯入完成！共 ' + clients.length + ' 位客戶。請回到客戶關懷系統重新整理查看。', 'ok');
+  })
+  .catch(function() {
+    setStatus('寫入失敗，請重試', 'er');
+    document.getElementById('importBtn').disabled = false;
+  });
+}
+</script>
+</body>
+</html>
