@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>客戶關懷紀錄</title>
+<title>Miu客戶關懷</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -289,7 +289,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 <script src="https://accounts.google.com/gsi/client" async></script>
 <script>
 var CLIENT_ID = '543207730758-9ts36ee65ientbnj0oldfp2qk7k1uc0r.apps.googleusercontent.com';
-var SHEET_ID = '184tkzxwG2jTnf3amFlEtpdjul_LFWreMLIIfBDK1U0E';
+var SHEET_ID = null; // loaded per user from localStorage
 var SHEET_TITLE = 'Miu客戶關懷';
 var TAG_SHEET = '標籤設定';
 var TAG_COLORS = ['#b8927a','#8a7d9e','#7a9e9e','#c4a882','#9aaa8a','#b88a8a','#8a9aaa','#aa8a9e'];
@@ -402,6 +402,10 @@ async function onSignedIn(token, email) {
   localStorage.setItem('miu_ts', Date.now().toString());
   document.getElementById('userEmail').textContent = email;
   showScreen('app');
+  // Load per-user sheet ID
+  var userKey = 'miu_sheetId_' + email.replace(/[^a-z0-9]/gi,'_');
+  SHEET_ID = localStorage.getItem(userKey) || null;
+  await initSheet(email, userKey);
   await loadTags();
   await loadClients();
   renderChips();
@@ -424,6 +428,7 @@ function signIn() {
 function signOut() {
   if (accessToken) google.accounts.oauth2.revoke(accessToken, function() {});
   accessToken = null;
+  SHEET_ID = null;
   localStorage.removeItem('miu_token');
   localStorage.removeItem('miu_email');
   localStorage.removeItem('miu_ts');
@@ -480,6 +485,53 @@ setInterval(function() {
 }, 45 * 60 * 1000);
 
 // ── Sheets ─────────────────────────────────────────────────────
+async function initSheet(email, userKey) {
+  // Check if existing sheet is valid
+  if (SHEET_ID) {
+    try {
+      var chk = await sheetsReq('/' + SHEET_ID + '?fields=spreadsheetId');
+      if (chk.spreadsheetId) return; // Sheet exists and accessible
+    } catch(e) {}
+    SHEET_ID = null;
+  }
+  // Search for existing sheet in Drive
+  try {
+    var search = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'Miu客戶關懷系統'%20and%20mimeType%3D'application%2Fvnd.google-apps.spreadsheet'%20and%20trashed%3Dfalse&fields=files(id,name)", {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    }).then(function(r) { return r.json(); });
+    if (search.files && search.files.length > 0) {
+      SHEET_ID = search.files[0].id;
+      localStorage.setItem(userKey, SHEET_ID);
+      showToast('✓ 找到您的試算表', 'ok');
+      return;
+    }
+  } catch(e) {}
+  // Create new sheet for this user
+  try {
+    var res = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        properties: { title: 'Miu客戶關懷系統' },
+        sheets: [
+          { properties: { title: SHEET_TITLE } },
+          { properties: { title: TAG_SHEET } }
+        ]
+      })
+    }).then(function(r) { return r.json(); });
+    SHEET_ID = res.spreadsheetId;
+    localStorage.setItem(userKey, SHEET_ID);
+    // Write headers
+    await sheetsReq('/' + SHEET_ID + '/values/' + encodeURIComponent(SHEET_TITLE + '!A1') + '?valueInputOption=RAW', 'PUT',
+      { values: [['ID','姓名','生日','標籤','紀錄JSON','建立時間','編號']] });
+    await sheetsReq('/' + SHEET_ID + '/values/' + encodeURIComponent(TAG_SHEET + '!A1') + '?valueInputOption=RAW', 'PUT',
+      { values: [['ID','名稱','顏色']] });
+    showToast('✓ 已建立您的專屬試算表', 'ok');
+  } catch(e) {
+    showToast('建立試算表失敗，請重試', 'err');
+  }
+}
+
 async function sheetsReq(path, method, body) {
   method = method || 'GET';
   var opts = { method: method, headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' } };
