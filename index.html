@@ -490,7 +490,7 @@ function renderDetail(c){
       '<button class="btn-recdel" onclick="deleteRec(\''+r.id+'\')"><i class="ti ti-x"></i></button>'+
       '</div>'+
       '<div class="rec-field"><div class="rec-flabel">療程項目</div><input type="text" value="'+(r.procedure||'')+'" placeholder="水光、電波、玻尿酸…" onchange="updateRec(\''+r.id+'\',\'procedure\',this.value)"/></div>'+
-      '<div class="rec-field"><div class="rec-flabel">小叮嚀</div><textarea rows="2" placeholder="術前術後注意事項…" onchange="updateRec(\''+r.id+'\',\'reminder\',this.value)">'+(r.reminder||'')+'</textarea></div>'+
+
       '<div class="rec-field"><div class="rec-flabel">小筆記</div><textarea rows="2" placeholder="私人備註…" onchange="updateRec(\''+r.id+'\',\'note\',this.value)">'+(r.note||'')+'</textarea></div>'+
       '</div>';
   }).join('');
@@ -516,7 +516,7 @@ function toggleTag(k,btn,color){
   if(c.tags.includes(k)){c.tags=c.tags.filter(function(t){return t!==k;});btn.classList.remove('on');btn.style.background='';btn.style.borderColor='';}
   else{c.tags.push(k);btn.classList.add('on');btn.style.background='linear-gradient('+grad(color)+')';btn.style.borderColor='transparent';}
 }
-function addRecord(){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;const r={id:Date.now().toString(),date:new Date().toISOString().slice(0,10),procedure:'',reminder:'',note:''};c.records=c.records||[];c.records.unshift(r);renderDetail(c);}
+function addRecord(){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;const r={id:Date.now().toString(),date:new Date().toISOString().slice(0,10),procedure:'',note:''};c.records=c.records||[];c.records.unshift(r);renderDetail(c);}
 function updateRec(rid,f,v){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;const r=c.records.find(function(r){return r.id===rid;});if(r)r[f]=v;}
 function deleteRec(rid){const c=clients.find(function(x){return x.id===currentId;});if(!c)return;c.records=c.records.filter(function(r){return r.id!==rid;});renderDetail(c);}
 function saveClient(){
