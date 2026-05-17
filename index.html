@@ -807,10 +807,10 @@ function renderDetail(c) {
 
   var recsHtml = sorted.map(function(r, idx) {
     var bg = REC_COLORS[idx % REC_COLORS.length];
-    var safeN = r.note ? r.note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'<br>').replace(/\n/g,'<br>') : '';
-    var noteHtml = r.note
-      ? '<div class="note-wrap"><div class="note-full">' + safeN + '</div>'
-      : '<div class="note-wrap"><textarea class="note-empty" placeholder="私人備註…" onchange="updateRec(\'' + r.id + '\',\'note\',this.value)"></textarea></div>';
+    var noteHtml = '<div class="note-wrap"><textarea class="note-textarea" rows="8" placeholder="私人備註…" onchange="updateRec(\\\'' + r.id + '\\\',\\\'note\\\',this.value)">' + (r.note ? r.note.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea></div>';
+
+
+
 
     return '<div class="rec-card" style="background:' + bg + ';">' +
       '<div class="rec-top">' +
@@ -903,8 +903,8 @@ function deleteClient() {
 // ── Edit note inline
 function editNote(btn) {
   var wrap = btn.parentElement;
-  var fullDiv = wrap.querySelector('.note-full');
-  var textarea = wrap.querySelector('.note-empty');
+
+
   var text = fullDiv ? fullDiv.textContent : '';
   if (textarea) {
     textarea.value = text;
