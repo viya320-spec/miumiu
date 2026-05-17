@@ -130,7 +130,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .rec-field input{width:100%;font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;padding:6px 0 10px;}
 .rec-field input::placeholder{color:var(--t3);}
 .note-wrap{padding:6px 0 10px;display:flex;flex-direction:column;}
-.note-textarea{font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;width:100%;resize:none;line-height:1.8;min-height:80px;padding:0;font-family:inherit;}
+.note-textarea{font-size:16px;border:none;background:transparent;color:var(--t1);outline:none;width:100%;resize:none;line-height:1.8;min-height:160px;padding:0;font-family:inherit;}
 .note-textarea::placeholder{color:var(--t3);}
 
 
@@ -357,6 +357,17 @@ function tagAbbr(name) {
 }
 
 function initials(n) { return n ? n.slice(0, 2) : '??'; }
+
+function calcAge(birthday) {
+  if (!birthday) return '';
+  var today = new Date();
+  var birth = new Date(birthday);
+  var age = today.getFullYear() - birth.getFullYear();
+  var m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  if (age < 0 || age > 120) return '';
+  return '（' + age + '歲）';
+}
 
 function gradStr(color) {
   // Morandi mapping - any color gets converted to muted morandi version
@@ -757,7 +768,7 @@ function renderList() {
       '<div class="avatar" style="background:' + abg + ';">' + atx + '</div>' +
       '<div class="card-info">' +
       '<div class="card-name">' + c.name + (c.code ? ' <span style="font-size:12px;font-weight:500;color:var(--t3);background:#f0ecff;padding:2px 8px;border-radius:10px;">#' + c.code + '</span>' : '') + '</div>' +
-      (c.birthday ? '<div class="card-bday"><i class="ti ti-cake" style="font-size:11px;vertical-align:-1px"></i> ' + c.birthday + '</div>' : '') +
+      (c.birthday ? '<div class="card-bday"><i class="ti ti-cake" style="font-size:11px;vertical-align:-1px"></i> ' + c.birthday + calcAge(c.birthday) + '</div>' : '') +
       (tpills ? '<div class="card-tags">' + tpills + '</div>' : '') +
       '</div><i class="ti ti-chevron-right card-arrow"></i></div>' +
       (last ? '<div class="card-last"><i class="ti ti-calendar-event" style="font-size:12px;vertical-align:-1px"></i> ' + last.date + (last.procedure ? '・' + last.procedure : '') + '</div>' : '') +
@@ -811,7 +822,7 @@ function renderDetail(c) {
     '<div class="form-card"><div class="form-title">基本資料</div>' +
     '<div class="frow"><span class="flabel">姓名</span><input class="finput" type="text" id="edit-name" value="' + c.name + '" oninput="liveUpdate(\'name\',this.value)"/></div>' +
     '<div class="frow"><span class="flabel">編號</span><input class="finput" type="text" id="edit-code" value="' + (c.code||'') + '" oninput="liveUpdate(\'code\',this.value)" placeholder="選填"/></div>' +
-    '<div class="frow"><span class="flabel">生日</span><input class="finput" type="date" id="edit-bday" value="' + (c.birthday||'') + '" onchange="liveUpdate(\'birthday\',this.value)"/></div>' +
+    '<div class="frow"><span class="flabel">生日</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;"><span style="font-size:13px;color:var(--t3);">' + (c.birthday ? calcAge(c.birthday) : '') + '</span><input class="finput" type="date" id="edit-bday" value="' + (c.birthday||'') + '" onchange="liveUpdate(\'birthday\',this.value)" style="flex:none;width:auto;"/></div></div>' +
     '</div>' +
     '<div class="form-card"><div class="form-title">標籤</div>' +
     '<div class="tags-area">' + tagChips +
