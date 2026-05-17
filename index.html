@@ -446,30 +446,43 @@ async function tryAutoLogin() {
   var token = localStorage.getItem('miu_token');
   var email = localStorage.getItem('miu_email');
   var ts = parseInt(localStorage.getItem('miu_ts') || '0');
+
+  // Token still valid (within 50 mins)
   if (token && email && (Date.now() - ts < 50 * 60 * 1000)) {
     try {
-      var res = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + token);
+      var controller = new AbortController();
+      var tid = setTimeout(function(){ controller.abort(); }, 4000);
+      var res = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + token, { signal: controller.signal });
+      clearTimeout(tid);
       var data = await res.json();
       if (data.email || data.sub) { await onSignedIn(token, email); return; }
     } catch (e) {}
   }
+
+  // Try silent refresh
   if (email) {
     try {
-      await new Promise(function(resolve, reject) {
-        google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly email profile',
-          hint: email, prompt: '',
-          callback: async function(resp) {
-            if (resp.error) { reject(resp.error); return; }
-            await onSignedIn(resp.access_token, email);
-            resolve();
-          }
-        }).requestAccessToken();
-      });
+      var silentDone = false;
+      await Promise.race([
+        new Promise(function(resolve, reject) {
+          google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly email profile',
+            hint: email, prompt: '',
+            callback: async function(resp) {
+              if (resp.error) { reject(resp.error); return; }
+              silentDone = true;
+              await onSignedIn(resp.access_token, email);
+              resolve();
+            }
+          }).requestAccessToken();
+        }),
+        new Promise(function(_, reject) { setTimeout(function(){ if(!silentDone) reject('timeout'); }, 5000); })
+      ]);
       return;
     } catch (e) {}
   }
+
   showScreen('login');
 }
 
@@ -942,19 +955,30 @@ function confirmAddTag() {
   scheduleSync(); showToast('標籤已新增', 'ok');
 }
 
-// Wait for GSI to load then auto login - with 8 second timeout
+// Wait for GSI with timeout
 var gsiWaitCount = 0;
 function waitForGSI() {
   gsiWaitCount++;
   if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
     tryAutoLogin();
-  } else if (gsiWaitCount > 40) {
-    // Timeout after 8 seconds - show login screen anyway
+  } else if (gsiWaitCount > 25) {
+    // 5 sec timeout - show login
     showScreen('login');
   } else {
     setTimeout(waitForGSI, 200);
   }
 }
+
+// Also set hard timeout in case everything freezes
+setTimeout(function() {
+  var loading = document.getElementById('loadingScreen');
+  var login = document.getElementById('loginScreen');
+  var app = document.getElementById('mainApp');
+  if (loading && loading.style.display !== 'none') {
+    showScreen('login');
+  }
+}, 6000);
+
 waitForGSI();
 </script>
 </body>
