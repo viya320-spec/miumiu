@@ -129,9 +129,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .rec-flabel{font-size:15px;font-weight:700;color:var(--t2);padding-top:12px;letter-spacing:.2px;}
 .rec-field input{width:100%;font-size:17px;border:none;background:transparent;color:var(--t1);outline:none;padding:10px 0 12px;}
 .rec-field input::placeholder{color:var(--t3);}
-.note-wrap{padding:6px 0 10px;display:flex;flex-direction:column;}
-.note-textarea{font-size:17px;border:1.5px solid var(--sep);background:var(--bg);color:var(--t1);outline:none;width:100%;resize:none;line-height:1.8;min-height:200px;padding:12px;font-family:inherit;border-radius:12px;margin-top:6px;margin-bottom:6px;}
-.note-textarea:focus{border-color:var(--p2);background:#fff;}
+.note-wrap{padding:4px 0 8px;display:flex;flex-direction:column;width:100%;}
+.note-textarea{font-size:18px;border:2px solid #d8d0e8;background:#faf8ff;color:var(--t1);outline:none;width:100%;resize:vertical;line-height:1.9;min-height:240px;padding:14px;font-family:inherit;border-radius:14px;margin-top:8px;margin-bottom:8px;display:block;}
+.note-textarea:focus{border-color:var(--p2);background:#fff;box-shadow:0 0 0 3px rgba(138,125,158,.12);}
 .note-textarea::placeholder{color:var(--t3);}
 
 
@@ -819,7 +819,7 @@ function renderDetail(c) {
       '</div>' +
       '<div class="rec-field"><div class="rec-flabel">療程項目</div>' +
       '<input type="text" value="' + (r.procedure || '') + '" placeholder="水光、電波、玻尿酸…" onchange="updateRec(\'' + r.id + '\',\'procedure\',this.value)"/></div>' +
-      '<div class="rec-field"><div class="rec-flabel">小筆記</div>' + noteHtml + '</div>' +
+      '<div class="rec-field" style="padding-bottom:8px;"><div class="rec-flabel">小筆記</div>' + noteHtml + '</div>' +
       '</div>';
   }).join('');
 
